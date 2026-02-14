@@ -4,7 +4,7 @@ import http from "http";
 import authRoutes from "./routes/auth_routes.js";
 import {connectDb}from "./config/db.config.js";
 import cors from "cors";
-
+import userRoutes from "./routes/user_routes.js";
 const app = express();
 
 app.use(cors({
@@ -18,16 +18,11 @@ app.use(express.json());
 // connect database
 connectDb();
 
-// test route
-app.get("/", (req, res) => {
-  res.json({
-    name: "amir",
-    age: 15
-  });
-});
-
 // auth routes
 app.use("/auth", authRoutes);
+
+// user routes
+app.use("/users", userRoutes);
 
 const server = http.createServer(app);
 

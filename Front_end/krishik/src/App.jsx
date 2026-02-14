@@ -4,6 +4,7 @@ import LoginPage from "./pages/login_page";
 import RegisterPage from "./pages/register_page";
 import { BrowserRouter as Router, Routes, Route } from "react-router"; // ✅ correct import
 import NavBar from "./components/header";
+import User_profile from "./components/header/user_profile";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Home_page />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/profile" element={<User_profile />} />
         </Routes>
       </div>
     </Router>
