@@ -1,4 +1,4 @@
-import API from "./index.js"
+import API from "./index.js";
 
 export const getAllProducts = async () => {
     try {
@@ -6,6 +6,16 @@ export const getAllProducts = async () => {
         return response.data;
     } catch (error) {
         console.error("Error fetching products:", error);
+        throw error;
+    }
+};
+
+export const getMyProducts = async () => {
+    try {
+        const response = await API.get("/products/mine");
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching seller products:", error);
         throw error;
     }
 };
@@ -48,4 +58,4 @@ export const createProduct = async (productData) => {
         console.error("Error creating product:", error);
         throw error;
     }
-};  
+};

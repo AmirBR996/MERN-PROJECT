@@ -1,5 +1,5 @@
 import { verifyToken } from "../utils/jwt.utils.js";
-import User from "../models/user.model.js"; // make sure this path is correct
+import User from "../models/user_models.js";
 
 export const authenticate = async (req, res, next) => {
   try {
@@ -9,7 +9,7 @@ export const authenticate = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized. No token provided" });
     }
 
-    const token = authHeader.split(" ")[1]; // Bearer TOKEN
+    const token = authHeader.split(" ")[1];
 
     const decoded = verifyToken(token);
     if (!decoded) {
@@ -24,11 +24,10 @@ export const authenticate = async (req, res, next) => {
     req.user = {
       id: user._id,
       email: user.email,
-      role: user.user_type
+      role: String(user.user_type || "").toLowerCase(),
     };
 
     next();
-
   } catch (error) {
     console.error("Auth error:", error);
     return res.status(401).json({ message: "Token expired or invalid" });
