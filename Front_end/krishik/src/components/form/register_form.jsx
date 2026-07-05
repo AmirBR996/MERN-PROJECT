@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { register } from "../../api/auth.api";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import Input from "../ui/Input";
+import Select from "../ui/Select";
+import Button from "../ui/Button";
+
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -12,161 +19,131 @@ const RegisterForm = () => {
     password: "",
     c_password: "",
   });
+
   const handlechange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
+
+  const validate = () => {
+    const next = {};
+    if (formData.password.length < 6) {
+      next.password = "Password must be at least 6 characters";
+    }
+    if (formData.password !== formData.c_password) {
+      next.c_password = "Passwords do not match";
+    }
+    if (!formData.user_type) {
+      next.user_type = "Please select a user type";
+    }
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
   const handlesubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
+
+    setLoading(true);
     try {
       const response = await register(formData);
-      console.log(response);
+      toast.success(response.message || "Account created! Please sign in.");
       navigate("/login");
     } catch (err) {
-      console.log(err);
+      toast.error(err?.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
   return (
-    <div className="mt-10 ">
-      <form  className="flex flex-col gap-3" onSubmit={handlesubmit}>
-        {/* first name */}
-        <div className="flex flex-col gap-1">
-          {/* label */}
-          <label className="text-[16px] font-semibold" htmlFor="first_name">
-            First Name
-          </label>
-          {/* input */}
-          <input
-            name="first_name"
-            className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-            onChange={handlechange}
-            id="first_name"
-            type="text"
-            placeholder="John"
-            required
-          />
-        </div>
+    <form className="flex flex-col gap-4" onSubmit={handlesubmit}>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Input
+          label="First Name"
+          id="first_name"
+          name="first_name"
+          placeholder="Ram"
+          value={formData.first_name}
+          onChange={handlechange}
+          required
+        />
+        <Input
+          label="Last Name"
+          id="last_name"
+          name="last_name"
+          placeholder="Sharma"
+          value={formData.last_name}
+          onChange={handlechange}
+          required
+        />
+      </div>
 
-        {/* last  name */}
-        <div className="flex flex-col gap-1">
-          {/* label */}
-          <label className="text-[16px] font-semibold" htmlFor="last_name">
-            Last Name
-          </label>
-          {/* input */}
-          <input
-              onChange={handlechange}
-            name="last_name"
-            className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-            id="last_name"
-            type="text"
-            placeholder="Doe"
-            required
-          />
-        </div>
+      <Input
+        label="Location"
+        id="location"
+        name="location"
+        placeholder="Kathmandu, Nepal"
+        value={formData.location}
+        onChange={handlechange}
+        required
+      />
 
-        {/* location */}
-        <div className="flex flex-col gap-1">
-          {/* label */}
-          <label className="text-[16px] font-semibold" htmlFor="last_name">
-            Location
-          </label>
-          {/* input */}
-          <input
-            name="location"
-            onChange={handlechange}
-            className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-            id="location"
-            type="text"
-            placeholder="kathmandu"
-            required
-          />
-        </div>
+      <Input
+        label="Email"
+        id="email"
+        name="email"
+        type="email"
+        placeholder="you@example.com"
+        value={formData.email}
+        onChange={handlechange}
+        required
+      />
 
-        {/* email */}
-        <div className="flex flex-col gap-1">
-          {/* label */}
-          <label className="text-[16px] font-semibold" htmlFor="email">
-            Email
-          </label>
-          {/* input */}
-          <input
-            name="email"
-            onChange={handlechange}
-            className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-            id="email"
-            type="email"
-            placeholder="johndoe@example.com"
-            required
-          />
-        </div>
-        
-        {/* user - type */}
-        <div className="flex flex-col gap-1">
-            {/* label */}
-            <label className="text-[16px] font-semibold" htmlFor="user_type">
-                Register As
-            </label>
-            {/* select */}
-            <select 
-              name="user_type" 
-              onChange={handlechange}
-              id="user_type" 
-              className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-              required
-            >
-                <option value="" disabled selected>Select user type</option>
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
-            </select>
-        </div>
+      <Select
+        label="Register As"
+        id="user_type"
+        name="user_type"
+        value={formData.user_type}
+        onChange={handlechange}
+        error={errors.user_type}
+        required
+      >
+        <option value="" disabled>
+          Select user type
+        </option>
+        <option value="buyer">Buyer — I want to purchase produce</option>
+        <option value="seller">Farmer/Seller — I want to list products</option>
+      </Select>
 
-        {/* password */}
-        <div className="flex flex-col gap-1">
-          {/* label */}
-          <label className="text-[16px] font-semibold" htmlFor="password">
-            Password
-          </label>
-          {/* input */}
-          <input
-            onChange={handlechange}
-            name="password"
-            className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-            id="password"
-            type="password"
-            placeholder="enter password"
-            required
-          />
-        </div>
+      <Input
+        label="Password"
+        id="password"
+        name="password"
+        type="password"
+        placeholder="At least 6 characters"
+        value={formData.password}
+        onChange={handlechange}
+        error={errors.password}
+        required
+      />
 
-        {/*retype  password */}
-        <div className="flex flex-col gap-1">
-          {/* label */}
-          <label className="text-[16px] font-semibold" htmlFor="c_password">
-            Re-type Password
-          </label>
-          {/* input */}
-          <input
-            onChange={handlechange}
-            name="c_password"
-            className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-            id="c_password"
-            type="password"
-            placeholder="retype password"
-            required
-          />
-        </div>
+      <Input
+        label="Confirm Password"
+        id="c_password"
+        name="c_password"
+        type="password"
+        placeholder="Re-type password"
+        value={formData.c_password}
+        onChange={handlechange}
+        error={errors.c_password}
+        required
+      />
 
-        {/* submit button */}
-        <div className="w-full mt-4">
-          <button
-            className="w-full bg-green-500 py-3.5 text-white font-bold rounded-sm cursor-pointer"
-            type="submit"
-          >
-            Create Account
-          </button>
-        </div>
-      </form>
-    </div>
+      <Button type="submit" className="w-full mt-2" disabled={loading}>
+        {loading ? "Creating account..." : "Create Account"}
+      </Button>
+    </form>
   );
 };
 

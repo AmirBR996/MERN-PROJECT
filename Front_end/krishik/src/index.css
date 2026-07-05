@@ -1,28 +1,89 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,500&display=swap");
 @import "tailwindcss";
 
+@theme {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+
+  --color-leaf-50: #f3f9f0;
+  --color-leaf-100: #e4f2dc;
+  --color-leaf-200: #c8e4b8;
+  --color-leaf-300: #9ecf82;
+  --color-leaf-400: #72b454;
+  --color-leaf-500: #4f9436;
+  --color-leaf-600: #3d7629;
+  --color-leaf-700: #325d24;
+  --color-leaf-800: #2a4b20;
+  --color-leaf-900: #233f1c;
+
+  --color-soil-50: #faf6f1;
+  --color-soil-100: #f0e8dc;
+  --color-soil-200: #e0d0b8;
+  --color-soil-300: #c9ad87;
+  --color-soil-400: #b08d62;
+  --color-soil-500: #9a7550;
+  --color-soil-600: #7d5e42;
+  --color-soil-700: #654b37;
+  --color-soil-800: #553f31;
+  --color-soil-900: #49362c;
+
+  --color-harvest-50: #fef8ee;
+  --color-harvest-100: #fcefd4;
+  --color-harvest-200: #f8dba8;
+  --color-harvest-300: #f3c071;
+  --color-harvest-400: #eda038;
+  --color-harvest-500: #e5851a;
+  --color-harvest-600: #ca6510;
+  --color-harvest-700: #a84c10;
+  --color-harvest-800: #893d15;
+  --color-harvest-900: #713414;
+
+  --color-parchment: #f7f3eb;
+  --color-bark: #2c2419;
+  --color-mist: #8a8175;
+}
+
 :root {
-	color-scheme: light;
+  color-scheme: light;
 }
 
 html {
-	scroll-behavior: smooth;
+  scroll-behavior: smooth;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
-	margin: 0;
-	min-height: 100vh;
-	font-family: "Space Grotesk", sans-serif;
-	background:
-		radial-gradient(circle at top left, rgba(16, 185, 129, 0.12), transparent 28%),
-		radial-gradient(circle at top right, rgba(250, 204, 21, 0.12), transparent 26%),
-		linear-gradient(180deg, #f8fafc 0%, #f4f8f0 100%);
+  margin: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: var(--font-body);
+  color: var(--color-bark);
+  background:
+    radial-gradient(ellipse 80% 50% at 0% 0%, rgba(79, 148, 54, 0.08), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(229, 133, 26, 0.07), transparent),
+    linear-gradient(180deg, var(--color-parchment) 0%, #f0ebe2 100%);
 }
 
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 #root {
-	min-height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* Subtle woven texture overlay for hero sections */
+.texture-market {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239a7550' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }

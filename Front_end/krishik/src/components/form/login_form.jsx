@@ -1,17 +1,18 @@
 import React, { useState, useContext } from "react";
 import { login as apiLogin } from "../../api/auth.api";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { AuthContext } from "../footer./authcontext.jsx";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
 
 const Login_form = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: loginContext } = useContext(AuthContext);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   const handlechange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,69 +20,46 @@ const Login_form = () => {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await apiLogin(formData);
-
-      // Update context + localStorage
       loginContext(response.user, response.access_token);
-
-      toast.success(response.message || "Login Success");
-
-      navigate("/", { replace: true });
+      toast.success(response.message || "Welcome back!");
+      const redirect = location.state?.from || "/";
+      navigate(redirect, { replace: true });
     } catch (err) {
-      console.error(err);
-      toast.error(err?.response?.data?.message || err.message || "Login Failed");
+      toast.error(err?.response?.data?.message || err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="mt-10">
-      <form className="flex flex-col gap-3" onSubmit={handlesubmit}>
-        
-        {/* Email */}
-        <div className="flex flex-col gap-1">
-          <label className="text-[16px] font-semibold" htmlFor="email">
-            Email
-          </label>
-          <input
-            className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-            onChange={handlechange}
-            id="email"
-            name="email"
-            type="email"
-            placeholder="johndoe@example.com"
-            required
-          />
-        </div>
-
-        {/* Password */}
-        <div className="flex flex-col gap-1">
-          <label className="text-[16px] font-semibold" htmlFor="password">
-            Password
-          </label>
-          <input
-            className="border border-gray-400 px-2 py-2.5 rounded-md focus:outline-green-500"
-            onChange={handlechange}
-            id="password"
-            type="password"
-            name="password"
-            placeholder="enter password"
-            required
-          />
-        </div>
-
-        {/* Submit */}
-        <div className="w-full mt-4">
-          <button
-            className="w-full bg-green-500 py-3.5 text-white font-bold rounded-sm"
-            type="submit"
-          >
-            Login
-          </button>
-        </div>
-
-      </form>
-    </div>
+    <form className="flex flex-col gap-4" onSubmit={handlesubmit}>
+      <Input
+        label="Email"
+        id="email"
+        name="email"
+        type="email"
+        placeholder="you@example.com"
+        value={formData.email}
+        onChange={handlechange}
+        required
+      />
+      <Input
+        label="Password"
+        id="password"
+        name="password"
+        type="password"
+        placeholder="Enter your password"
+        value={formData.password}
+        onChange={handlechange}
+        required
+      />
+      <Button type="submit" className="w-full mt-2" disabled={loading}>
+        {loading ? "Signing in..." : "Sign In"}
+      </Button>
+    </form>
   );
 };
 

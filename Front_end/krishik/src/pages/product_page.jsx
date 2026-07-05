@@ -1,67 +1,77 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Card from "../components/cards/product_card";
+import ProductCard from "../components/cards/product_card";
+import CategoryFilter from "../components/product/CategoryFilter";
+import { ProductGridSkeleton } from "../components/ui/ProductSkeleton";
+import EmptyState from "../components/ui/EmptyState";
 import { getAllProducts } from "../api/product.api";
+import { filterAndSortProducts, SORT_OPTIONS } from "../utils/helpers";
+import { PackageOpen } from "lucide-react";
 
 const ProductPage = ({ searchQuery = "" }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [category, setCategory] = useState("All");
+  const [sort, setSort] = useState("newest");
 
   useEffect(() => {
-    fetchProducts();
+    getAllProducts()
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
   }, []);
 
-  const fetchProducts = async () => {
-    try {
-      const data = await getAllProducts();
-      setProducts(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredProducts = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-
-    if (!query) {
-      return products;
-    }
-
-    return products.filter((product) => {
-      const searchableText = [product?.name, product?.description, product?.category]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      return searchableText.includes(query);
-    });
-  }, [products, searchQuery]);
-
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  const filteredProducts = useMemo(
+    () => filterAndSortProducts(products, { search: searchQuery, category, sort }),
+    [products, searchQuery, category, sort]
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-10 max-w-3xl">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-700">
+      <div className="mb-8 max-w-3xl">
+        <p className="text-sm font-semibold uppercase tracking-widest text-leaf-600">
           Marketplace
         </p>
-        <h1 className="text-4xl font-black text-slate-950 sm:text-5xl">
-          Krishik Bazar Products
+        <h1 className="mt-2 font-display text-4xl font-bold text-bark sm:text-5xl">
+          Fresh from Nepali farms
         </h1>
-        <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
-          Browse products listed by farmers across the marketplace. Seller editing is handled from the My Products dashboard.
+        <p className="mt-3 text-mist leading-relaxed">
+          Browse vegetables, fruits, grains, and dairy listed directly by local farmers.
         </p>
       </div>
 
-      {filteredProducts.length === 0 ? (
-        <div className="rounded-[1.75rem] border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-sm">
-          {searchQuery.trim() ? "No products match your search." : "No products available."}
-        </div>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <CategoryFilter selected={category} onChange={setCategory} />
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="rounded-xl border border-soil-200 bg-white px-4 py-2.5 text-sm text-bark outline-none focus:border-leaf-500"
+        >
+          {SORT_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {loading ? (
+        <ProductGridSkeleton count={8} />
+      ) : filteredProducts.length === 0 ? (
+        <EmptyState
+          title="No products found"
+          description={
+            searchQuery || category !== "All"
+              ? "Try adjusting your search or category filter."
+              : "No farmers have listed products yet. Check back soon!"
+          }
+          actionLabel="View all products"
+          actionTo="/products"
+          icon={PackageOpen}
+        />
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product) => (
-            <Card key={product._id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
       )}

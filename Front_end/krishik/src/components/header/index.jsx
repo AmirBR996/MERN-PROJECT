@@ -1,180 +1,214 @@
-import React, { useState, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useContext, useState } from "react";
 import { GoSearch } from "react-icons/go";
-import { FaUserCircle } from "react-icons/fa";
+import { ShoppingCart, Menu, X, ChevronDown, Package, LogOut } from "lucide-react";
 import { AuthContext } from "../footer./authcontext";
+import { useCart } from "../../contexts/CartContext";
 
-const NavBar = ({ onCartOpen, searchQuery = "", onSearchChange }) => {
+const NavBar = ({ searchQuery = "", onSearchChange }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useContext(AuthContext);
+  const { itemCount } = useCart();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
+    setMenuOpen(false);
     navigate("/");
   };
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleSearchChange = (e) => {
-    const query = e.target.value;
-
-    if (onSearchChange) {
-      onSearchChange(query);
-    }
-  };
-
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
     navigate("/products");
   };
 
-  // Navigation links (Profile is NOT included by default)
-const navLinks = [
-  { to: "/", label: "Home" },
-  { to: "/products", label: "Products" },
-  ...(user?.user_type === "seller"
-    ? [{ to: "/my-products", label: "My Products" }]
-    : []),
-];
+  const navLinks = [
+    { to: "/", label: "Home" },
+    { to: "/products", label: "Marketplace" },
+    ...(user?.user_type === "seller"
+      ? [{ to: "/my-products", label: "My Products" }]
+      : []),
+    ...(user?.user_type === "buyer"
+      ? [{ to: "/orders", label: "My Orders" }]
+      : []),
+  ];
 
   return (
-    <nav className="w-full sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm px-6 py-4">
-      <div className="flex items-center justify-between">
-        {/* Logo */}
-        <div className="text-2xl font-bold italic tracking-widest text-green-600">
-          Krishik Bazar
-        </div>
+    <nav className="sticky top-0 z-50 w-full border-b border-soil-200 bg-parchment/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <Link to="/" className="shrink-0">
+          <span className="font-display text-xl font-bold text-leaf-700 sm:text-2xl">
+            Krishik Bazar
+          </span>
+        </Link>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden md:flex items-center gap-8 font-medium text-gray-700">
+        <ul className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <li key={link.to}>
               <Link
                 to={link.to}
-                className={`hover:text-green-600 transition ${
+                className={`text-sm font-medium transition ${
                   location.pathname === link.to
-                    ? "text-green-600 font-semibold"
-                    : ""
+                    ? "text-leaf-700"
+                    : "text-mist hover:text-bark"
                 }`}
               >
                 {link.label}
               </Link>
             </li>
           ))}
-
         </ul>
 
-        {/* Search Bar */}
         <form
-          className="hidden md:flex items-center w-72 border border-gray-300 rounded-md px-3 py-2 bg-gray-50"
           onSubmit={handleSearchSubmit}
+          className="hidden flex-1 max-w-xs items-center gap-2 rounded-xl border border-soil-200 bg-white px-3 py-2 lg:flex lg:max-w-sm"
         >
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search produce..."
             value={searchQuery}
-            onChange={handleSearchChange}
-            className="w-full bg-transparent outline-none text-sm text-gray-700"
+            onChange={(e) => onSearchChange?.(e.target.value)}
+            className="w-full bg-transparent text-sm outline-none text-bark placeholder:text-mist"
           />
-
-          <button type="submit" className="text-gray-500 hover:text-green-600">
+          <button type="submit" className="text-mist hover:text-leaf-600">
             <GoSearch size={18} />
           </button>
         </form>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-4">
-          {/* Cart */}
-          {onCartOpen && (
-            <button
-              onClick={onCartOpen}
-              className="px-3 py-2 rounded-md bg-green-100 text-green-700 text-sm hover:bg-green-200 transition"
-            >
-              Cart
-            </button>
-          )}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            to="/cart"
+            className="relative rounded-xl p-2.5 text-mist transition hover:bg-soil-100 hover:text-leaf-700"
+            aria-label="Cart"
+          >
+            <ShoppingCart className="h-5 w-5" />
+            {itemCount > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-harvest-500 text-[10px] font-bold text-white">
+                {itemCount > 9 ? "9+" : itemCount}
+              </span>
+            )}
+          </Link>
 
           {user ? (
-            <>
-              {/* Profile Icon */}
-              <Link
-                to="/profile"
-                state={{ backgroundLocation: location }}
-                title="Profile"
+            <div className="relative hidden md:block">
+              <button
+                type="button"
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="flex items-center gap-2 rounded-xl border border-soil-200 bg-white px-3 py-2 text-sm font-medium text-bark transition hover:border-leaf-300"
               >
-                <FaUserCircle
-                  size={34}
-                  className="text-green-600 hover:text-green-700 cursor-pointer transition"
-                />
-              </Link>
-
-            </>
-          ) : (
-            <Link to="/login">
-              <button className="px-4 py-2 rounded-md bg-green-600 text-white text-sm hover:bg-green-700 transition">
-                Login
+                {user.first_name}
+                <ChevronDown className="h-4 w-4 text-mist" />
               </button>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-soil-200 bg-white py-1 shadow-lg">
+                    <Link
+                      to="/profile"
+                      state={{ backgroundLocation: location }}
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-bark hover:bg-soil-50"
+                    >
+                      Profile
+                    </Link>
+                    {user.user_type === "buyer" && (
+                      <Link
+                        to="/orders"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-bark hover:bg-soil-50"
+                      >
+                        <Package className="h-4 w-4" />
+                        My Orders
+                      </Link>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden rounded-xl bg-leaf-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-leaf-700 md:block"
+            >
+              Sign In
             </Link>
           )}
-        </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden px-3 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? "Close" : "Menu"}
-        </button>
+          <button
+            type="button"
+            className="rounded-xl p-2.5 text-bark md:hidden"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Menu"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden mt-3 border-t border-gray-200 pt-2">
-          <ul className="flex flex-col gap-2 font-medium text-gray-700">
-            {[
-              ...navLinks,
-              ...(user ? [{ to: "/profile", label: "Profile" }] : []),
-            ].map((link) => (
+      {mobileOpen && (
+        <div className="border-t border-soil-200 bg-white px-4 py-4 md:hidden">
+          <form onSubmit={handleSearchSubmit} className="mb-4 flex items-center gap-2 rounded-xl border border-soil-200 px-3 py-2">
+            <input
+              type="text"
+              placeholder="Search produce..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              className="w-full text-sm outline-none"
+            />
+            <GoSearch size={18} className="text-mist" />
+          </form>
+          <ul className="space-y-1">
+            {navLinks.map((link) => (
               <li key={link.to}>
                 <Link
                   to={link.to}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`block px-4 py-2 rounded-md hover:bg-gray-100 ${
-                    location.pathname === link.to
-                      ? "text-green-600 font-semibold"
-                      : ""
-                  }`}
+                  onClick={() => setMobileOpen(false)}
+                  className="block rounded-lg px-3 py-2.5 text-sm font-medium text-bark hover:bg-soil-50"
                 >
                   {link.label}
                 </Link>
               </li>
             ))}
-
-            {/* Mobile Logout */}
-            {user && (
-              <li>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600"
-                >
-                  Logout
-                </button>
-              </li>
-            )}
-
-            {/* Mobile Login */}
-            {!user && (
+            {user ? (
+              <>
+                <li>
+                  <Link
+                    to="/profile"
+                    state={{ backgroundLocation: location }}
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-lg px-3 py-2.5 text-sm text-bark hover:bg-soil-50"
+                  >
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => { handleLogout(); setMobileOpen(false); }}
+                    className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-red-600 hover:bg-red-50"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
               <li>
                 <Link
                   to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700"
+                  onClick={() => setMobileOpen(false)}
+                  className="block rounded-lg bg-leaf-600 px-3 py-2.5 text-center text-sm font-semibold text-white"
                 >
-                  Login
+                  Sign In
                 </Link>
               </li>
             )}

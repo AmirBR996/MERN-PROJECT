@@ -8,7 +8,10 @@ const isOwnedByCurrentSeller = (product, userId) => {
 
 export const getProductById = async (req, res) => {
     try {
-        const product = await krishik_Product.findById(req.params.id);
+        const product = await krishik_Product.findById(req.params.id).populate(
+            "seller_id",
+            "first_name last_name location user_type"
+        );
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
@@ -21,7 +24,9 @@ export const getProductById = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
     try {
-        const products = await krishik_Product.find().sort({ createdAt: -1 });
+        const products = await krishik_Product.find()
+            .populate("seller_id", "first_name last_name location user_type")
+            .sort({ createdAt: -1 });
         res.json(products);
     } catch (error) {
         console.error("Error fetching products:", error);

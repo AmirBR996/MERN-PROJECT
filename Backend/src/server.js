@@ -6,6 +6,7 @@ import {connectDb}from "./config/db.config.js";
 import cors from "cors";
 import userRoutes from "./routes/user_routes.js";
 import productRoutes from "./routes/product_routes.js";
+import orderRoutes from "./routes/order_routes.js";
 const app = express();
 
 app.use(cors({
@@ -26,6 +27,7 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 
 app.use("/products", productRoutes);
+app.use("/orders", orderRoutes);
 
 const server = http.createServer(app);
 

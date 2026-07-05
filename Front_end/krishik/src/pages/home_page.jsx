@@ -159,33 +159,33 @@ export function Home_page({ searchQuery = "" }) {
   };
 
   return (
-    <main className="min-h-screen text-slate-900">
-      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#eef9e9_0%,#fff8ef_48%,#f2fbff_100%)]">
+    <div className="w-full min-h-screen text-slate-900">
+      <section className="relative w-full overflow-hidden bg-gradient-to-br from-leaf-50 via-parchment to-harvest-50 texture-market">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-amber-200/30 blur-3xl" />
+          <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-leaf-300/20 blur-3xl" />
+          <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-harvest-200/30 blur-3xl" />
         </div>
 
         <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-28">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-medium shadow-sm backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-soil-200 bg-white/80 px-4 py-2 text-sm font-medium text-leaf-700 shadow-sm backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-leaf-500" />
               Nepal&apos;s farmer-first agri marketplace
             </div>
 
             <div className="space-y-6">
-              <h1 className="max-w-3xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
+              <h1 className="font-display max-w-3xl text-5xl font-bold tracking-tight text-bark sm:text-6xl lg:text-7xl">
                 Sell fresh produce, connect with buyers, and grow from the farm up.
               </h1>
-              <p className="max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-                Krishik Bazaar gives farmers a larger digital storefront, a faster way to list products, and a cleaner path from harvest to sale.
+              <p className="max-w-2xl text-lg leading-8 text-mist sm:text-xl">
+                Krishik Bazar gives farmers a larger digital storefront and buyers a direct path from harvest to table.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-4">
               <Link
                 to="/products"
-                className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-slate-800"
+                className="inline-flex items-center gap-2 rounded-2xl bg-leaf-600 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-leaf-600/20 transition hover:-translate-y-0.5 hover:bg-leaf-700"
               >
                 Browse marketplace
                 <ArrowRight className="h-4 w-4" />
@@ -217,7 +217,7 @@ export function Home_page({ searchQuery = "" }) {
         </div>
       </section>
 
-      <section className="border-y border-slate-200 bg-white/80 py-10 backdrop-blur">
+      <section className="w-full border-y border-slate-200 bg-white py-10">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
           {stats.map((stat) => (
             <div key={stat.label} className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center">
@@ -231,7 +231,7 @@ export function Home_page({ searchQuery = "" }) {
         </div>
       </section>
 
-      <section className="bg-slate-50 py-20 lg:py-24">
+      <section className="w-full bg-slate-50 py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-700">
@@ -259,16 +259,16 @@ export function Home_page({ searchQuery = "" }) {
         </div>
       </section>
 
-      <section className="bg-white py-20 lg:py-24">
+      <section className="w-full bg-white py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-700">
-                Fresh from the farm
-              </p>
-              <h2 className="text-3xl font-black text-slate-950 sm:text-4xl">
-                Featured products with enough space to feel like a real marketplace.
-              </h2>
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-leaf-600">
+              Fresh from the farm
+            </p>
+            <h2 className="font-display text-3xl font-bold text-bark sm:text-4xl">
+              Featured products from local farmers
+            </h2>
             </div>
             <Link
               to="/products"
@@ -297,7 +297,7 @@ export function Home_page({ searchQuery = "" }) {
         </div>
       </section>
 
-      <section className="bg-slate-950 py-20 text-white lg:py-24">
+      <section className="w-full bg-slate-950 py-20 text-white lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <div>
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">
@@ -340,7 +340,7 @@ export function Home_page({ searchQuery = "" }) {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

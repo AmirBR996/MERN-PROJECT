@@ -30,6 +30,11 @@ const productSchema = new mongoose.Schema(
       default: 0,
       min: [0, "Stock cannot be negative"]
     },
+    unit: {
+      type: String,
+      enum: ["kg", "dozen", "litre", "piece", "bundle"],
+      default: "kg"
+    },
     seller_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
