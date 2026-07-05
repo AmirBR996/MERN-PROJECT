@@ -23,6 +23,18 @@ export const SORT_OPTIONS = [
 
 export const DELIVERY_FEE = 100;
 
+/** 2% of subtotal, minimum Rs. 10 — must match Backend/src/utils/fees.utils.js */
+export const calculatePlatformFee = (subtotal) => {
+  const fee = subtotal * 0.02;
+  return Math.max(10, Math.round(fee * 100) / 100);
+};
+
+export const calculateOrderTotals = (subtotal, deliveryFee = DELIVERY_FEE) => {
+  const platformFee = calculatePlatformFee(subtotal);
+  const total = Math.round((subtotal + deliveryFee + platformFee) * 100) / 100;
+  return { subtotal, deliveryFee, platformFee, total };
+};
+
 export const getSellerName = (seller) => {
   if (!seller) return "Local Farmer";
   if (typeof seller === "string") return "Local Farmer";

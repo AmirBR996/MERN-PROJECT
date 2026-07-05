@@ -54,9 +54,9 @@ const OrderConfirmationPage = () => {
           Estimated delivery: {order.estimated_delivery || "3-5 business days"}
         </div>
 
-        <div className="mt-4 space-y-2 border-t border-soil-200 pt-4">
+        <div className="mt-4 space-y-2 border-t border-soil-200 pt-4 text-sm">
           {order.items?.map((item, i) => (
-            <div key={i} className="flex justify-between text-sm">
+            <div key={i} className="flex justify-between">
               <span className="text-bark">
                 {item.name} × {item.quantity}
               </span>
@@ -65,9 +65,23 @@ const OrderConfirmationPage = () => {
           ))}
         </div>
 
-        <div className="mt-4 flex justify-between border-t border-soil-200 pt-4 font-display text-lg font-bold text-bark">
-          <span>Total paid</span>
-          <span>{formatPrice(order.total)}</span>
+        <div className="mt-4 space-y-2 border-t border-soil-200 pt-4 text-sm">
+          <div className="flex justify-between text-mist">
+            <span>Subtotal</span>
+            <span>{formatPrice(order.subtotal)}</span>
+          </div>
+          <div className="flex justify-between text-mist">
+            <span>Delivery fee</span>
+            <span>{formatPrice(order.delivery_fee)}</span>
+          </div>
+          <div className="flex justify-between text-mist">
+            <span>Krishik Bazar service charge</span>
+            <span>{formatPrice(order.platform_fee)}</span>
+          </div>
+          <div className="flex justify-between font-display text-lg font-bold text-bark">
+            <span>Total {order.payment_status === "pending" ? "due" : "paid"}</span>
+            <span>{formatPrice(order.total)}</span>
+          </div>
         </div>
 
         <div className="mt-4 rounded-xl bg-soil-50 p-4 text-sm text-mist">

@@ -88,6 +88,10 @@ const OrderDetailPage = () => {
             <span>Delivery</span>
             <span>{formatPrice(order.delivery_fee)}</span>
           </div>
+          <div className="flex justify-between text-mist">
+            <span>Krishik Bazar service charge</span>
+            <span>{formatPrice(order.platform_fee)}</span>
+          </div>
           <div className="flex justify-between font-display text-lg font-bold text-bark">
             <span>Total</span>
             <span>{formatPrice(order.total)}</span>
@@ -104,8 +108,13 @@ const OrderDetailPage = () => {
         </div>
 
         <p className="mt-4 text-sm text-mist">
-          Payment: {order.payment_method === "khalti" ? "Khalti" : "Cash on Delivery"} —{" "}
-          <span className="capitalize">{order.payment_status}</span>
+          Payment:{" "}
+          {order.payment_method === "esewa"
+            ? "eSewa"
+            : order.payment_method === "khalti"
+              ? "Khalti"
+              : "Cash on Delivery"}{" "}
+          — <span className="capitalize">{order.payment_status}</span>
         </p>
       </div>
     </div>

@@ -1,13 +1,15 @@
-import { formatPrice, DELIVERY_FEE } from "../../utils/helpers";
+import { formatPrice, DELIVERY_FEE, calculatePlatformFee } from "../../utils/helpers";
 
 const OrderSummary = ({
   items,
   subtotal,
   deliveryFee = DELIVERY_FEE,
+  platformFee,
   showGrouped = false,
   groupedBySeller,
 }) => {
-  const total = subtotal + deliveryFee;
+  const serviceCharge = platformFee ?? calculatePlatformFee(subtotal);
+  const total = subtotal + deliveryFee + serviceCharge;
 
   return (
     <div className="rounded-2xl border border-soil-200 bg-white p-6">
@@ -53,6 +55,10 @@ const OrderSummary = ({
         <div className="flex justify-between text-mist">
           <span>Delivery fee</span>
           <span>{formatPrice(deliveryFee)}</span>
+        </div>
+        <div className="flex justify-between text-mist">
+          <span>Krishik Bazar service charge</span>
+          <span>{formatPrice(serviceCharge)}</span>
         </div>
         <div className="flex justify-between font-display text-lg font-bold text-bark">
           <span>Total</span>

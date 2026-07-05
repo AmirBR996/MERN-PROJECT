@@ -1,27 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { createOrder } from "../api/order.api";
 import OrderSummary from "../components/order/OrderSummary";
 import Button from "../components/ui/Button";
-import { DELIVERY_FEE } from "../utils/helpers";
+import { DELIVERY_FEE, calculateOrderTotals } from "../utils/helpers";
+import { processPayment, PAYMENT_METHODS } from "../services/payment.service";
 import toast from "react-hot-toast";
-import { CreditCard, Banknote, Loader2 } from "lucide-react";
+import { CreditCard, Banknote, Loader2, Smartphone } from "lucide-react";
 
-/**
- * Khalti payment integration (sandbox/mock).
- * Replace initiateKhaltiPayment() with real Khalti checkout when credentials are ready:
- * - KHALTI_PUBLIC_KEY from env
- * - POST to https://a.khalti.com/api/v2/epayment/initiate/
- * - Redirect to payment_url, handle return via /payment/verify
- */
-const initiateKhaltiPayment = async ({ amount, orderName }) => {
-  await new Promise((r) => setTimeout(r, 1500));
-  return {
-    success: true,
-    transaction_id: `KHALTI-MOCK-${Date.now()}`,
-    message: `Sandbox payment of Rs. ${amount} for ${orderName}`,
-  };
+const METHOD_ICONS = {
+  esewa: Smartphone,
+  khalti: CreditCard,
+  cod: Banknote,
 };
 
 const PaymentPage = () => {
@@ -29,14 +20,20 @@ const PaymentPage = () => {
   const { items, subtotal, groupedBySeller, clearCart } = useCart();
   const [method, setMethod] = useState("khalti");
   const [loading, setLoading] = useState(false);
+  const [checkoutData, setCheckoutData] = useState(null);
+  const [ready, setReady] = useState(false);
 
-  const checkoutData = JSON.parse(sessionStorage.getItem("krishik_checkout") || "{}");
-  const total = subtotal + DELIVERY_FEE;
+  const { platformFee, total } = calculateOrderTotals(subtotal, DELIVERY_FEE);
 
-  if (items.length === 0 || !checkoutData.delivery_address) {
-    navigate("/cart");
-    return null;
-  }
+  useEffect(() => {
+    const stored = JSON.parse(sessionStorage.getItem("krishik_checkout") || "{}");
+    if (items.length === 0 || !stored.delivery_address) {
+      navigate("/cart", { replace: true });
+      return;
+    }
+    setCheckoutData(stored);
+    setReady(true);
+  }, [items.length, navigate]);
 
   const placeOrder = async (paymentStatus, transactionId = "") => {
     const orderPayload = {
@@ -52,6 +49,7 @@ const PaymentPage = () => {
       delivery_address: checkoutData.delivery_address,
       subtotal,
       delivery_fee: DELIVERY_FEE,
+      platform_fee: platformFee,
       total,
       payment_method: method,
       payment_status: paymentStatus,
@@ -64,35 +62,44 @@ const PaymentPage = () => {
   const handlePay = async () => {
     setLoading(true);
     try {
-      if (method === "khalti") {
-        const result = await initiateKhaltiPayment({
-          amount: total,
-          orderName: `Krishik Bazar (${items.length} items)`,
-        });
+      const result = await processPayment(method, {
+        amount: total,
+        orderName: `Krishik Bazar (${items.length} items)`,
+      });
 
-        if (!result.success) {
-          toast.error("Payment failed. Please try again.");
-          return;
-        }
-
-        const order = await placeOrder("paid", result.transaction_id);
-        clearCart();
-        sessionStorage.removeItem("krishik_checkout");
-        toast.success("Payment successful!");
-        navigate(`/orders/confirmation/${order._id}`, { replace: true });
-      } else {
-        const order = await placeOrder("pending");
-        clearCart();
-        sessionStorage.removeItem("krishik_checkout");
-        toast.success("Order placed! Pay on delivery.");
-        navigate(`/orders/confirmation/${order._id}`, { replace: true });
+      if (!result.success) {
+        toast.error("Payment failed. Please try again.");
+        return;
       }
+
+      const order = await placeOrder(result.payment_status, result.transaction_id);
+      clearCart();
+      sessionStorage.removeItem("krishik_checkout");
+
+      if (result.payment_status === "paid") {
+        toast.success("Payment successful!");
+      } else {
+        toast.success("Order placed! Pay on delivery.");
+      }
+
+      navigate(`/orders/confirmation/${order._id}`, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Could not complete order");
     } finally {
       setLoading(false);
     }
   };
+
+  if (!ready || !checkoutData) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-leaf-600" />
+      </div>
+    );
+  }
+
+  const selectedMethod = PAYMENT_METHODS[method];
+  const isOnlinePayment = selectedMethod?.paidOnSubmit;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -105,55 +112,43 @@ const PaymentPage = () => {
             <h2 className="font-display text-lg font-bold text-bark">Payment Method</h2>
 
             <div className="mt-4 space-y-3">
-              <label
-                className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition ${
-                  method === "khalti"
-                    ? "border-leaf-500 bg-leaf-50"
-                    : "border-soil-200 hover:border-soil-300"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value="khalti"
-                  checked={method === "khalti"}
-                  onChange={() => setMethod("khalti")}
-                  className="accent-leaf-600"
-                />
-                <CreditCard className="h-6 w-6 text-[#5C2D91]" />
-                <div>
-                  <p className="font-semibold text-bark">Khalti</p>
-                  <p className="text-sm text-mist">Pay securely via Khalti wallet (sandbox mode)</p>
-                </div>
-              </label>
+              {Object.values(PAYMENT_METHODS).map((option) => {
+                const Icon = METHOD_ICONS[option.id];
+                const isSelected = method === option.id;
 
-              <label
-                className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition ${
-                  method === "cod"
-                    ? "border-leaf-500 bg-leaf-50"
-                    : "border-soil-200 hover:border-soil-300"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value="cod"
-                  checked={method === "cod"}
-                  onChange={() => setMethod("cod")}
-                  className="accent-leaf-600"
-                />
-                <Banknote className="h-6 w-6 text-harvest-600" />
-                <div>
-                  <p className="font-semibold text-bark">Cash on Delivery</p>
-                  <p className="text-sm text-mist">Pay when your order arrives</p>
-                </div>
-              </label>
+                return (
+                  <label
+                    key={option.id}
+                    className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition ${
+                      isSelected
+                        ? "border-leaf-500 bg-leaf-50"
+                        : "border-soil-200 hover:border-soil-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value={option.id}
+                      checked={isSelected}
+                      onChange={() => setMethod(option.id)}
+                      className="accent-leaf-600"
+                    />
+                    <Icon className="h-6 w-6 shrink-0" style={{ color: option.color }} />
+                    <div>
+                      <p className="font-semibold text-bark">{option.label}</p>
+                      <p className="text-sm text-mist">{option.description}</p>
+                    </div>
+                  </label>
+                );
+              })}
             </div>
 
-            {method === "khalti" && (
+            {isOnlinePayment && (
               <div className="mt-4 rounded-xl bg-harvest-50 p-4 text-sm text-harvest-800">
-                <strong>Sandbox mode:</strong> This simulates a Khalti payment. Wire up real credentials in{" "}
-                <code className="rounded bg-white px-1">payment_page.jsx</code> when ready.
+                <strong>Sandbox mode:</strong> This simulates a {selectedMethod.label} payment.
+                Wire up real credentials in{" "}
+                <code className="rounded bg-white px-1">src/services/payment.service.js</code> when
+                ready.
               </div>
             )}
           </div>
@@ -164,8 +159,8 @@ const PaymentPage = () => {
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Processing...
               </>
-            ) : method === "khalti" ? (
-              "Pay with Khalti"
+            ) : isOnlinePayment ? (
+              `Pay ${selectedMethod.label}`
             ) : (
               "Place Order"
             )}
@@ -176,6 +171,7 @@ const PaymentPage = () => {
           items={items}
           subtotal={subtotal}
           deliveryFee={DELIVERY_FEE}
+          platformFee={platformFee}
           showGrouped
           groupedBySeller={groupedBySeller}
         />

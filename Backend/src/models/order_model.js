@@ -42,10 +42,11 @@ const orderSchema = new mongoose.Schema(
     },
     subtotal: { type: Number, required: true, min: 0 },
     delivery_fee: { type: Number, default: 100, min: 0 },
+    platform_fee: { type: Number, default: 0, min: 0 },
     total: { type: Number, required: true, min: 0 },
     payment_method: {
       type: String,
-      enum: ["khalti", "cod"],
+      enum: ["esewa", "khalti", "cod"],
       default: "khalti",
     },
     payment_status: {

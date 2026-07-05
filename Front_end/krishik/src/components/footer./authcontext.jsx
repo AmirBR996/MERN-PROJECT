@@ -2,19 +2,27 @@ import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
+const normalizeUser = (userData) => {
+  if (!userData) return null;
+  return {
+    ...userData,
+    user_type: String(userData.user_type || "buyer").toLowerCase(),
+  };
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedUser) setUser(normalizeUser(JSON.parse(storedUser)));
   }, []);
 
-  // LOGIN
   const login = (userData, token) => {
-    localStorage.setItem("user", JSON.stringify(userData));
+    const normalized = normalizeUser(userData);
+    localStorage.setItem("user", JSON.stringify(normalized));
     localStorage.setItem("access_token", token);
-    setUser(userData);
+    setUser(normalized);
   };
 
   // LOGOUT
@@ -51,8 +59,8 @@ export const AuthProvider = ({ children }) => {
       }
 
       // 🔥 Update local storage + state
-      localStorage.setItem("user", JSON.stringify(data));
-      setUser(data);
+      localStorage.setItem("user", JSON.stringify(normalizeUser(data)));
+      setUser(normalizeUser(data));
 
       return data;
     } catch (error) {

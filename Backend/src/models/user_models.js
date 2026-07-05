@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     user_type: {
       type: String,
       enum: ["seller", "buyer"],
-      default: "Buyer"
+      default: "buyer"
     },
     email: {
       type: String,

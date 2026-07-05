@@ -1,14 +1,22 @@
-import React, { useState } from "react";
-import { register } from "../../api/auth.api";
+import React, { useState, useContext } from "react";
+import { sendOtp, verifyOtp } from "../../api/auth.api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { AuthContext } from "../footer./authcontext.jsx";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
 import Button from "../ui/Button";
+import OtpVerification from "./OtpVerification";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const { login: loginContext } = useContext(AuthContext);
+  const [step, setStep] = useState("form");
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [otpError, setOtpError] = useState("");
+  const [devOtp, setDevOtp] = useState("");
+  const [devNotice, setDevNotice] = useState("");
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     first_name: "",
@@ -45,16 +53,98 @@ const RegisterForm = () => {
     if (!validate()) return;
 
     setLoading(true);
+    setOtpError("");
+    setDevOtp("");
+    setDevNotice("");
     try {
-      const response = await register(formData);
-      toast.success(response.message || "Account created! Please sign in.");
-      navigate("/login");
+      const response = await sendOtp(formData);
+      if (response.devOtp) {
+        setDevOtp(response.devOtp);
+        setDevNotice(response.devNotice || "");
+        toast.success("Development OTP generated — enter the code shown below");
+      } else {
+        toast.success(response.message || "Verification code sent!");
+      }
+      setStep("otp");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Registration failed");
+      toast.error(err?.response?.data?.message || "Could not send verification code");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleVerify = async (otp) => {
+    setLoading(true);
+    setOtpError("");
+    try {
+      const response = await verifyOtp({ email: formData.email, otp });
+      loginContext(response.user, response.access_token);
+      toast.success("Account created!");
+      navigate("/", { replace: true });
+    } catch (err) {
+      const message = err?.response?.data?.message || "Verification failed";
+      setOtpError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setResendLoading(true);
+    setOtpError("");
+    try {
+      const response = await sendOtp(formData);
+      if (response.devOtp) {
+        setDevOtp(response.devOtp);
+        setDevNotice(response.devNotice || "");
+      }
+      toast.success(response.message || "New code sent!");
+    } catch (err) {
+      const message = err?.response?.data?.message || "Could not resend code";
+      setOtpError(message);
+      toast.error(message);
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  if (step === "otp") {
+    return (
+      <div className="flex flex-col gap-4">
+        <div>
+          <h2 className="font-display text-xl font-bold text-bark">Verify your email</h2>
+          <p className="mt-1 text-sm text-mist">Step 2 of 2 — confirm it&apos;s really you</p>
+        </div>
+        <OtpVerification
+          email={formData.email}
+          onVerify={handleVerify}
+          onResend={handleResend}
+          loading={loading}
+          resendLoading={resendLoading}
+          error={otpError}
+        />
+        {devOtp && (
+          <div className="rounded-xl border border-harvest-200 bg-harvest-50 px-4 py-3 text-center">
+            <p className="text-xs font-semibold uppercase tracking-wide text-harvest-700">
+              Development mode
+            </p>
+            <p className="mt-1 text-sm text-harvest-800">{devNotice}</p>
+            <p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-bark">{devOtp}</p>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => {
+            setStep("form");
+            setOtpError("");
+          }}
+          className="text-sm text-mist hover:text-bark"
+        >
+          ← Back to registration form
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handlesubmit}>
@@ -141,7 +231,7 @@ const RegisterForm = () => {
       />
 
       <Button type="submit" className="w-full mt-2" disabled={loading}>
-        {loading ? "Creating account..." : "Create Account"}
+        {loading ? "Sending code..." : "Create Account"}
       </Button>
     </form>
   );

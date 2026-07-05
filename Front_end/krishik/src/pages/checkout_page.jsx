@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { AuthContext } from "../components/footer./authcontext.jsx";
@@ -7,6 +7,7 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { DELIVERY_FEE } from "../utils/helpers";
 import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ const CheckoutPage = () => {
     notes: "",
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (items.length === 0) {
+      navigate("/cart", { replace: true });
+    }
+  }, [items.length, navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -50,8 +57,11 @@ const CheckoutPage = () => {
   };
 
   if (items.length === 0) {
-    navigate("/cart");
-    return null;
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-leaf-600" />
+      </div>
+    );
   }
 
   return (

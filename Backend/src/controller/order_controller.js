@@ -1,5 +1,7 @@
 import Order from "../models/order_model.js";
 import krishik_Product from "../models/product_model.js";
+import { calculateOrderTotals } from "../utils/fees.utils.js";
+import { sendOrderConfirmationEmails } from "../services/orderEmail.service.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -7,7 +9,14 @@ export const createOrder = async (req, res) => {
       return res.status(403).json({ message: "Only buyers can place orders" });
     }
 
-    const { items, delivery_address, subtotal, delivery_fee, total, payment_method, payment_status, transaction_id } = req.body;
+    const {
+      items,
+      delivery_address,
+      delivery_fee,
+      payment_method,
+      payment_status,
+      transaction_id,
+    } = req.body;
 
     if (!items?.length || !delivery_address) {
       return res.status(400).json({ message: "Items and delivery address are required" });
@@ -23,17 +32,28 @@ export const createOrder = async (req, res) => {
       }
     }
 
+    const subtotal = items.reduce(
+      (sum, item) => sum + Number(item.price) * Number(item.quantity),
+      0
+    );
+    const totals = calculateOrderTotals(subtotal, delivery_fee ?? 100);
+
+    const validMethods = ["esewa", "khalti", "cod"];
+    const method = validMethods.includes(payment_method) ? payment_method : "khalti";
+    const status = payment_status === "paid" ? "paid" : "pending";
+
     const order = await Order.create({
       buyer_id: req.user.id,
       items,
       delivery_address,
-      subtotal,
-      delivery_fee: delivery_fee ?? 100,
-      total,
-      payment_method: payment_method || "khalti",
-      payment_status: payment_status || "pending",
+      subtotal: totals.subtotal,
+      delivery_fee: totals.delivery_fee,
+      platform_fee: totals.platform_fee,
+      total: totals.total,
+      payment_method: method,
+      payment_status: status,
       transaction_id: transaction_id || "",
-      status: payment_status === "paid" ? "confirmed" : "pending",
+      status: status === "paid" ? "confirmed" : "pending",
     });
 
     for (const item of items) {
@@ -43,8 +63,12 @@ export const createOrder = async (req, res) => {
     }
 
     const populated = await Order.findById(order._id)
-      .populate("items.seller_id", "first_name last_name location")
+      .populate("items.seller_id", "first_name last_name location email")
       .populate("items.product_id", "name image_url");
+
+    sendOrderConfirmationEmails(populated).catch((err) =>
+      console.error("Email dispatch error:", err.message)
+    );
 
     res.status(201).json(populated);
   } catch (error) {
