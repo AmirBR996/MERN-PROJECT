@@ -37,7 +37,7 @@ const NavBar = ({ searchQuery = "", onSearchChange }) => {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-soil-200 bg-parchment/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <div className="mx-auto flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link to="/" className="shrink-0">
           <span className="font-display text-xl font-bold text-leaf-700 sm:text-2xl">
             Krishik Bazar

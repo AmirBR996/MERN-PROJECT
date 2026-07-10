@@ -26,7 +26,7 @@ const ProductPage = ({ searchQuery = "" }) => {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8 max-w-3xl">
         <p className="text-sm font-semibold uppercase tracking-widest text-leaf-600">
           Marketplace

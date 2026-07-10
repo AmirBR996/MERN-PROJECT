@@ -57,7 +57,7 @@ const SellerProfilePage = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <div className="rounded-2xl border border-soil-200 bg-white p-8">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
           <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-600">

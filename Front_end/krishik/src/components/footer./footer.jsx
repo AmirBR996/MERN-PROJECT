@@ -4,7 +4,7 @@ import { Leaf } from "lucide-react";
 const Footer = () => {
   return (
     <footer className="mt-auto w-full border-t border-soil-200 bg-bark text-soil-200">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
+      <div className="mx-auto grid w-full gap-10 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
           <div className="flex items-center gap-2">
             <Leaf className="h-5 w-5 text-leaf-400" />
@@ -36,7 +36,7 @@ const Footer = () => {
       </div>
 
       <div className="w-full border-t border-soil-700">
-        <div className="mx-auto max-w-7xl px-4 py-4 text-center text-xs text-soil-400 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 py-4 text-center text-xs text-soil-400 sm:px-6 lg:px-8">
           © {new Date().getFullYear()} Krishik Bazar. All rights reserved.
         </div>
       </div>

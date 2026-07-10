@@ -26,7 +26,7 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-10">
+      <div className="mx-auto px-4 py-10">
         <ProductSkeleton />
       </div>
     );
@@ -60,7 +60,7 @@ const ProductDetailPage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <Link
         to="/products"
         className="mb-6 inline-flex items-center gap-2 text-sm text-mist hover:text-leaf-700"

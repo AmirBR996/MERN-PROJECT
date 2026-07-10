@@ -4,22 +4,19 @@ import {
   ArrowRight,
   BadgeCheck,
   CircleDollarSign,
-  CheckCircle2,
   Leaf,
-  MapPin,
   Package,
-  Plus,
   ShieldCheck,
   Sprout,
-  Star,
   TrendingUp,
   Truck,
-  Upload,
   Users,
 } from "lucide-react";
 import { AuthContext } from "../components/footer./authcontext.jsx";
 import { createProduct, getAllProducts } from "../api/product.api.js";
 import ProductCard from "../components/cards/product_card.jsx";
+import { ProductGridSkeleton } from "../components/ui/ProductSkeleton.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 
 const initialProductForm = {
   name: "",
@@ -159,14 +156,14 @@ export function Home_page({ searchQuery = "" }) {
   };
 
   return (
-    <div className="w-full min-h-screen text-slate-900">
+    <div className="w-full min-h-screen text-bark">
       <section className="relative w-full overflow-hidden bg-gradient-to-br from-leaf-50 via-parchment to-harvest-50 texture-market">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-leaf-300/20 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-harvest-200/30 blur-3xl" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-28">
+        <div className="relative mx-auto grid gap-14 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-28">
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 rounded-full border border-soil-200 bg-white/80 px-4 py-2 text-sm font-medium text-leaf-700 shadow-sm backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-leaf-500" />
@@ -204,12 +201,12 @@ export function Home_page({ searchQuery = "" }) {
 
             <div className="absolute -left-4 top-8 hidden max-w-xs rounded-2xl border border-white/70 bg-white/90 p-4 shadow-lg backdrop-blur md:block">
               <div className="flex items-center gap-3">
-                <div className="rounded-2xl bg-emerald-100 p-3 text-emerald-700">
+                <div className="rounded-2xl bg-leaf-100 p-3 text-leaf-700">
                   <Leaf className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Fresh crop spotlight</p>
-                  <p className="text-sm text-slate-500">Show new harvests at the top of the feed.</p>
+                  <p className="text-sm font-semibold text-bark">Fresh crop spotlight</p>
+                  <p className="text-sm text-mist">Show new harvests at the top of the feed.</p>
                 </div>
               </div>
             </div>
@@ -217,42 +214,49 @@ export function Home_page({ searchQuery = "" }) {
         </div>
       </section>
 
-      <section className="w-full border-y border-slate-200 bg-white py-10">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+      <section className="w-full border-y border-soil-200 bg-white py-10">
+        <div className="mx-auto grid grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
           {stats.map((stat) => (
-            <div key={stat.label} className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+            <div key={stat.label} className="rounded-3xl border border-soil-200 bg-soil-50/60 p-6 text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-700">
                 <stat.icon className="h-6 w-6" />
               </div>
-              <div className="text-2xl font-black text-slate-950">{stat.value}</div>
-              <div className="mt-1 text-sm text-slate-500">{stat.label}</div>
+              <div className="font-display text-2xl font-bold text-bark">{stat.value}</div>
+              <div className="mt-1 text-sm text-mist">{stat.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="w-full bg-slate-50 py-20 lg:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="w-full bg-soil-50/50 py-20 lg:py-24">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-2xl text-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-700">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-leaf-600">
               Marketplace highlights
             </p>
-            <h2 className="text-3xl font-black text-slate-950 sm:text-4xl">
+            <h2 className="font-display text-3xl font-bold text-bark sm:text-4xl">
               Built for buyers, but designed to help farmers sell faster.
             </h2>
-            <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
-              The home page now acts like a real marketplace entry point with live products, seller-focused actions, and a larger layout that gives the brand room to breathe.
+            <p className="mt-4 text-base leading-7 text-mist sm:text-lg">
+              The home page acts like a real marketplace entry point, with live products, seller-focused actions, and room for the brand to breathe.
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {features.map((feature) => (
-              <div key={feature.title} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+            {features.map((feature, index) => (
+              <div
+                key={feature.title}
+                className="rounded-3xl border border-soil-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-soil-200/50"
+              >
+                <div
+                  className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl ${
+                    index % 2 === 0 ? "bg-leaf-100 text-leaf-700" : "bg-harvest-100 text-harvest-700"
+                  }`}
+                >
                   <feature.icon className="h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-950">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{feature.description}</p>
+                <h3 className="font-display text-xl font-bold text-bark">{feature.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-mist">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -260,7 +264,7 @@ export function Home_page({ searchQuery = "" }) {
       </section>
 
       <section className="w-full bg-white py-20 lg:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-leaf-600">
@@ -272,7 +276,7 @@ export function Home_page({ searchQuery = "" }) {
             </div>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 self-start rounded-2xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-emerald-300 hover:text-emerald-700"
+              className="inline-flex items-center gap-2 self-start rounded-2xl border border-soil-200 px-5 py-3 text-sm font-semibold text-bark transition hover:border-leaf-300 hover:text-leaf-700"
             >
               View all products
               <ArrowRight className="h-4 w-4" />
@@ -280,9 +284,7 @@ export function Home_page({ searchQuery = "" }) {
           </div>
 
           {loadingProducts ? (
-            <div className="rounded-4xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center text-slate-500">
-              Loading products...
-            </div>
+            <ProductGridSkeleton count={3} />
           ) : featuredProducts.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {featuredProducts.map((product) => (
@@ -290,29 +292,33 @@ export function Home_page({ searchQuery = "" }) {
               ))}
             </div>
           ) : (
-            <div className="rounded-4xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center text-slate-500">
-              No products available yet.
-            </div>
+            <EmptyState
+              title="No products yet"
+              description="No farmers have listed products yet. Check back soon, or browse the full marketplace."
+              actionLabel="Browse marketplace"
+              actionTo="/products"
+              icon={Package}
+            />
           )}
         </div>
       </section>
 
-      <section className="w-full bg-slate-950 py-20 text-white lg:py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+      <section className="w-full bg-bark py-20 text-white lg:py-24">
+        <div className="mx-auto grid gap-8 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-harvest-300">
               Built for growth
             </p>
-            <h2 className="text-3xl font-black sm:text-4xl">
-              Bigger homepage, clearer product flow, and a better path for farmers.
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">
+              A bigger homepage, a clearer product flow, and a better path for farmers.
             </h2>
-            <p className="mt-4 max-w-xl text-base leading-7 text-white/70 sm:text-lg">
-              The redesign gives the landing page more space, stronger hierarchy, and a live listing section that feels like a real marketplace feature instead of a static promo card.
+            <p className="mt-4 max-w-xl text-base leading-7 text-soil-200 sm:text-lg">
+              More space, stronger hierarchy, and a live listing section that feels like a real marketplace feature instead of a static promo card.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
                 to="/register"
-                className="inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-semibold text-bark transition hover:-translate-y-0.5"
               >
                 Create account
                 <ArrowRight className="h-4 w-4" />
@@ -330,11 +336,11 @@ export function Home_page({ searchQuery = "" }) {
             {[
               { title: "Direct sales", text: "Cut friction between the field and the buyer." },
               { title: "Seller visibility", text: "Make farmer profiles and listings easier to discover." },
-              { title: "Functional UI", text: "Add products directly from the homepage." },
+              { title: "Live listings", text: "Add products directly from the homepage." },
             ].map((item) => (
-              <div key={item.title} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
-                <p className="text-lg font-bold text-white">{item.title}</p>
-                <p className="mt-3 text-sm leading-6 text-white/70">{item.text}</p>
+              <div key={item.title} className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+                <p className="font-display text-lg font-bold text-white">{item.title}</p>
+                <p className="mt-3 text-sm leading-6 text-soil-200">{item.text}</p>
               </div>
             ))}
           </div>
@@ -342,10 +348,6 @@ export function Home_page({ searchQuery = "" }) {
       </section>
     </div>
   );
-}
-
-function CheckMark() {
-  return <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />;
 }
 
 export default Home_page;
