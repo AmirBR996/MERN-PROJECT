@@ -2,13 +2,13 @@ const Select = ({ label, error, id, children, className = "", ...props }) => {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-sm font-semibold text-bark">
+        <label htmlFor={id} className="text-sm font-semibold text-stone-900">
           {label}
         </label>
       )}
       <select
         id={id}
-        className={`rounded-xl border border-soil-200 bg-white px-4 py-3 text-sm text-bark outline-none transition focus:border-leaf-500 focus:ring-2 focus:ring-leaf-200 ${error ? "border-red-400" : ""} ${className}`}
+        className={`rounded-md border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${error ? "border-red-400" : ""} ${className}`}
         {...props}
       >
         {children}

@@ -102,24 +102,6 @@ export function Home_page({ searchQuery = "" }) {
     },
   ];
 
-  const farmerSteps = [
-    {
-      icon: Sprout,
-      title: "List harvest",
-      description: "Share product details, stock, and images from the farm.",
-    },
-    {
-      icon: Users,
-      title: "Reach buyers",
-      description: "Your produce becomes discoverable on the live marketplace.",
-    },
-    {
-      icon: TrendingUp,
-      title: "Grow income",
-      description: "Track what sells and expand the crops that move fastest.",
-    },
-  ];
-
   const handleProductChange = (event) => {
     const { name, value } = event.target;
     setProductForm((current) => ({ ...current, [name]: value }));
@@ -156,57 +138,55 @@ export function Home_page({ searchQuery = "" }) {
   };
 
   return (
-    <div className="w-full min-h-screen text-bark">
-      <section className="relative w-full overflow-hidden bg-gradient-to-br from-leaf-50 via-parchment to-harvest-50 texture-market">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-leaf-300/20 blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-harvest-200/30 blur-3xl" />
-        </div>
-
-        <div className="relative mx-auto grid gap-14 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-28">
+    <div className="w-full min-h-screen bg-stone-50 text-stone-800 font-serif selection:bg-orange-200">
+      {/* Hero Section */}
+      <section className="relative w-full overflow-hidden bg-gradient-to-br from-amber-50/60 via-stone-100 to-orange-50/30 border-b border-stone-200">
+        <div className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]" />
+        
+        <div className="relative mx-auto grid gap-14 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-24">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-soil-200 bg-white/80 px-4 py-2 text-sm font-medium text-leaf-700 shadow-sm backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-leaf-500" />
-              Nepal&apos;s farmer-first agri marketplace
+            <div className="inline-flex items-center gap-2 rounded-lg border border-stone-300 bg-stone-100 px-4 py-1.5 text-xs uppercase tracking-wider font-sans font-semibold text-stone-700 shadow-xs">
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-600" />
+              Nepal&apos;s organic agri marketplace
             </div>
 
             <div className="space-y-6">
-              <h1 className="font-display max-w-3xl text-5xl font-bold tracking-tight text-bark sm:text-6xl lg:text-7xl">
-                Sell fresh produce, connect with buyers, and grow from the farm up.
+              <h1 className="max-w-3xl text-4xl font-normal tracking-tight text-stone-900 sm:text-5xl lg:text-6xl font-serif leading-tight">
+                Sell honest produce, connect directly, and grow from the <span className="italic text-emerald-800 font-medium">ground up.</span>
               </h1>
-              <p className="max-w-2xl text-lg leading-8 text-mist sm:text-xl">
-                Krishik Bazar gives farmers a larger digital storefront and buyers a direct path from harvest to table.
+              <p className="max-w-2xl text-lg font-sans text-stone-600 leading-relaxed">
+                Krishik Bazar gives local farmers a direct digital storefront and brings the neighborhood market experience straight to your table.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 font-sans">
               <Link
                 to="/products"
-                className="inline-flex items-center gap-2 rounded-2xl bg-leaf-600 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-leaf-600/20 transition hover:-translate-y-0.5 hover:bg-leaf-700"
+                className="inline-flex items-center gap-2 rounded-md bg-stone-900 px-6 py-3.5 text-sm font-medium text-amber-50 shadow-md transition hover:bg-emerald-800"
               >
-                Browse marketplace
+                Explore the harvest
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
 
           <div className="relative">
-            <div className="overflow-hidden rounded-4xl border border-white/70 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.12)]">
+            <div className="overflow-hidden rounded-xl border border-stone-300 p-2 bg-white shadow-xl">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR49OHGzVdIq4BC6-TZuL_p-_r-wFYasTKi4fZknxyvLQ&s=10"
                 alt="Farmer in a field"
-                className="h-130 w-full object-cover"
+                className="h-120 w-full object-cover rounded-lg"
               />
             </div>
 
-            <div className="absolute -left-4 top-8 hidden max-w-xs rounded-2xl border border-white/70 bg-white/90 p-4 shadow-lg backdrop-blur md:block">
+            <div className="absolute -left-4 top-8 hidden max-w-xs rounded-lg border border-stone-300 bg-amber-50/95 p-4 shadow-md font-sans md:block">
               <div className="flex items-center gap-3">
-                <div className="rounded-2xl bg-leaf-100 p-3 text-leaf-700">
-                  <Leaf className="h-6 w-6" />
+                <div className="rounded-md bg-emerald-800 p-2.5 text-amber-50">
+                  <Leaf className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-bark">Fresh crop spotlight</p>
-                  <p className="text-sm text-mist">Show new harvests at the top of the feed.</p>
+                  <p className="text-xs uppercase tracking-wider font-bold text-stone-900">Market Pick</p>
+                  <p className="text-sm text-stone-700 mt-0.5">Spotlight on seasonal local harvests.</p>
                 </div>
               </div>
             </div>
@@ -214,71 +194,23 @@ export function Home_page({ searchQuery = "" }) {
         </div>
       </section>
 
-      <section className="w-full border-y border-soil-200 bg-white py-10">
-        <div className="mx-auto grid grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
-          {stats.map((stat) => (
-            <div key={stat.label} className="rounded-3xl border border-soil-200 bg-soil-50/60 p-6 text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-700">
-                <stat.icon className="h-6 w-6" />
-              </div>
-              <div className="font-display text-2xl font-bold text-bark">{stat.value}</div>
-              <div className="mt-1 text-sm text-mist">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="w-full bg-soil-50/50 py-20 lg:py-24">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto mb-12 max-w-2xl text-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-leaf-600">
-              Marketplace highlights
-            </p>
-            <h2 className="font-display text-3xl font-bold text-bark sm:text-4xl">
-              Built for buyers, but designed to help farmers sell faster.
-            </h2>
-            <p className="mt-4 text-base leading-7 text-mist sm:text-lg">
-              The home page acts like a real marketplace entry point, with live products, seller-focused actions, and room for the brand to breathe.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {features.map((feature, index) => (
-              <div
-                key={feature.title}
-                className="rounded-3xl border border-soil-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-soil-200/50"
-              >
-                <div
-                  className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl ${
-                    index % 2 === 0 ? "bg-leaf-100 text-leaf-700" : "bg-harvest-100 text-harvest-700"
-                  }`}
-                >
-                  <feature.icon className="h-7 w-7" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-bark">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-mist">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+     {/* Featured Products Section */}
       <section className="w-full bg-white py-20 lg:py-24">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-2xl">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-leaf-600">
-              Fresh from the farm
-            </p>
-            <h2 className="font-display text-3xl font-bold text-bark sm:text-4xl">
-              Featured products from local farmers
-            </h2>
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-emerald-800 font-sans">
+                Straight from the Soil
+              </p>
+              <h2 className="text-3xl font-normal text-stone-900 sm:text-4xl">
+                Featured local listings
+              </h2>
             </div>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 self-start rounded-2xl border border-soil-200 px-5 py-3 text-sm font-semibold text-bark transition hover:border-leaf-300 hover:text-leaf-700"
+              className="inline-flex items-center gap-2 self-start rounded-md border border-stone-300 bg-white px-5 py-2.5 text-sm font-medium font-sans text-stone-700 transition hover:bg-stone-50"
             >
-              View all products
+              View the whole market
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -286,15 +218,15 @@ export function Home_page({ searchQuery = "" }) {
           {loadingProducts ? (
             <ProductGridSkeleton count={3} />
           ) : featuredProducts.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
               {featuredProducts.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
           ) : (
             <EmptyState
-              title="No products yet"
-              description="No farmers have listed products yet. Check back soon, or browse the full marketplace."
+              title="No products listed yet"
+              description="Our regional farmers haven't stocked the virtual shelf today. Please try again soon."
               actionLabel="Browse marketplace"
               actionTo="/products"
               icon={Package}
@@ -302,50 +234,42 @@ export function Home_page({ searchQuery = "" }) {
           )}
         </div>
       </section>
-
-      <section className="w-full bg-bark py-20 text-white lg:py-24">
-        <div className="mx-auto grid gap-8 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-          <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-harvest-300">
-              Built for growth
+      {/* Features Section */}
+      <section className="w-full bg-stone-100/50 py-20 lg:py-24">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <p className="mb-2 text-xs font-bold uppercase tracking-widest text-orange-700 font-sans">
+              Our Principles
             </p>
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">
-              A bigger homepage, a clearer product flow, and a better path for farmers.
+            <h2 className="text-3xl font-normal text-stone-900 sm:text-4xl">
+              Honest trade, designed to help local farming communities thrive.
             </h2>
-            <p className="mt-4 max-w-xl text-base leading-7 text-soil-200 sm:text-lg">
-              More space, stronger hierarchy, and a live listing section that feels like a real marketplace feature instead of a static promo card.
+            <p className="mt-4 text-base font-sans text-stone-600 leading-relaxed">
+              We eliminate technical clutter to deliver a straightforward marketplace path connecting rural growers with city kitchens.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-semibold text-bark transition hover:-translate-y-0.5"
-              >
-                Create account
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/products"
-                className="inline-flex items-center gap-2 rounded-2xl border border-white/20 px-6 py-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/40"
-              >
-                Explore products
-              </Link>
-            </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-              { title: "Direct sales", text: "Cut friction between the field and the buyer." },
-              { title: "Seller visibility", text: "Make farmer profiles and listings easier to discover." },
-              { title: "Live listings", text: "Add products directly from the homepage." },
-            ].map((item) => (
-              <div key={item.title} className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-                <p className="font-display text-lg font-bold text-white">{item.title}</p>
-                <p className="mt-3 text-sm leading-6 text-soil-200">{item.text}</p>
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4 font-sans">
+            {features.map((feature, index) => (
+              <div
+                key={feature.title}
+                className="bg-white p-6 rounded-xl border border-stone-200 shadow-xs transition duration-200 hover:border-stone-400"
+              >
+                <div
+                  className={`mb-4 flex h-10 w-10 items-center justify-center rounded-lg ${
+                    index % 2 === 0 ? "bg-emerald-50 text-emerald-800" : "bg-orange-50 text-orange-700"
+                  }`}
+                >
+                  <feature.icon className="h-5 w-5" />
+                </div>
+                <h3 className="text-lg font-bold text-stone-900">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-stone-600">{feature.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
+
     </div>
   );
 }

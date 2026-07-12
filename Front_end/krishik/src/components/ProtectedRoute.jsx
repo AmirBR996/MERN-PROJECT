@@ -17,13 +17,13 @@ const ProtectedRoute = ({ children, role }) => {
   if (requiredRole && userRole !== requiredRole) {
     return (
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
-        <h1 className="font-display text-2xl font-bold text-bark">Access restricted</h1>
-        <p className="mt-3 text-mist">
+        <h1 className="font-serif text-2xl font-bold text-stone-900">Access restricted</h1>
+        <p className="mt-3 text-stone-500">
           This page is for <strong>{requiredRole}</strong> accounts. You&apos;re signed in as a{" "}
           <strong>{userRole}</strong>.
         </p>
         {requiredRole === "buyer" && userRole === "seller" && (
-          <p className="mt-2 text-sm text-mist">
+          <p className="mt-2 text-sm text-stone-500">
             Farmer accounts can list products but cannot place orders. Sign in with a buyer account
             to checkout.
           </p>

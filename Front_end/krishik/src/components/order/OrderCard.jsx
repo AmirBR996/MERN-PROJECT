@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import { formatPrice } from "../../utils/helpers";
 
 const statusStyles = {
-  pending: "bg-harvest-100 text-harvest-700",
-  confirmed: "bg-leaf-100 text-leaf-700",
-  delivered: "bg-soil-100 text-soil-700",
+  pending: "bg-orange-50 text-orange-700",
+  confirmed: "bg-emerald-50 text-emerald-800",
+  delivered: "bg-stone-100/50 text-stone-700",
   cancelled: "bg-red-100 text-red-700",
 };
 
@@ -19,23 +19,23 @@ const OrderCard = ({ order }) => {
   return (
     <Link
       to={`/orders/${order._id}`}
-      className="block rounded-2xl border border-soil-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md"
+      className="block rounded-xl border border-stone-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-sm"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-mist">
+          <p className="text-xs font-medium uppercase tracking-wider text-stone-500">
             Order #{order._id?.slice(-8).toUpperCase()}
           </p>
-          <p className="mt-1 font-display text-lg font-bold text-bark">{date}</p>
-          <p className="text-sm text-mist">{itemCount} item{itemCount !== 1 ? "s" : ""}</p>
+          <p className="mt-1 font-serif text-lg font-bold text-stone-900">{date}</p>
+          <p className="text-sm text-stone-500">{itemCount} item{itemCount !== 1 ? "s" : ""}</p>
         </div>
         <div className="text-right">
           <span
-            className={`inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusStyles[order.status] || statusStyles.pending}`}
+            className={`inline-block rounded-md px-3 py-1 text-xs font-semibold capitalize ${statusStyles[order.status] || statusStyles.pending}`}
           >
             {order.status}
           </span>
-          <p className="mt-2 font-display font-bold text-bark">{formatPrice(order.total)}</p>
+          <p className="mt-2 font-serif font-bold text-stone-900">{formatPrice(order.total)}</p>
         </div>
       </div>
 
@@ -45,11 +45,11 @@ const OrderCard = ({ order }) => {
             key={i}
             src={item.image_url}
             alt={item.name}
-            className="h-12 w-12 shrink-0 rounded-lg object-cover"
+            className="h-12 w-12 shrink-0 rounded-md object-cover"
           />
         ))}
         {order.items?.length > 4 && (
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-soil-100 text-xs font-semibold text-mist">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-stone-100/50 text-xs font-semibold text-stone-500">
             +{order.items.length - 4}
           </div>
         )}

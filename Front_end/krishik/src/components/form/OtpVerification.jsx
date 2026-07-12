@@ -82,10 +82,10 @@ const OtpVerification = ({ email, onVerify, onResend, loading, resendLoading, er
             value={digit}
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
-            className={`h-12 w-10 rounded-xl border-2 text-center text-lg font-bold outline-none transition sm:h-14 sm:w-12 ${
+            className={`h-12 w-10 rounded-md border-2 text-center text-lg font-bold outline-none transition sm:h-14 sm:w-12 ${
               error
                 ? "border-red-400 bg-red-50 text-red-700"
-                : "border-soil-200 bg-white text-bark focus:border-leaf-500"
+                : "border-stone-200 bg-white text-stone-900 focus:border-emerald-600"
             }`}
             aria-label={`Digit ${index + 1}`}
           />
@@ -102,7 +102,7 @@ const OtpVerification = ({ email, onVerify, onResend, loading, resendLoading, er
         {loading ? "Verifying..." : "Verify & Create Account"}
       </Button>
 
-      <div className="text-center text-sm text-mist">
+      <div className="text-center text-sm text-stone-500">
         Didn&apos;t receive the code?{" "}
         {countdown > 0 ? (
           <span>Resend in {countdown}s</span>
@@ -111,7 +111,7 @@ const OtpVerification = ({ email, onVerify, onResend, loading, resendLoading, er
             type="button"
             onClick={handleResend}
             disabled={resendLoading}
-            className="font-semibold text-leaf-600 hover:text-leaf-700 disabled:opacity-50"
+            className="font-semibold text-emerald-700 hover:text-emerald-800 disabled:opacity-50"
           >
             {resendLoading ? "Sending..." : "Resend OTP"}
           </button>

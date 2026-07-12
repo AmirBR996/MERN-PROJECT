@@ -47,8 +47,8 @@ const CartPage = () => {
 
   return (
     <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="font-display text-3xl font-bold text-bark">Your Cart</h1>
-      <p className="mt-1 text-mist">
+      <h1 className="font-serif text-3xl font-bold text-stone-900">Your Cart</h1>
+      <p className="mt-1 text-stone-500">
         {items.length} item{items.length !== 1 ? "s" : ""} from local farmers
       </p>
 

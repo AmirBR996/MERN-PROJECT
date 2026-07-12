@@ -20,51 +20,51 @@ const ProductCard = ({ product, onDelete, onEdit, showActions = true }) => {
   };
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-soil-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-soil-200/50">
-      <Link to={`/products/${product._id}`} className="relative block h-52 overflow-hidden bg-soil-100">
-        <img
-          src={product?.image_url}
-          alt={product?.name || "Product"}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-        />
-        <div className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-leaf-700 backdrop-blur">
-          {product?.category || "Other"}
-        </div>
-        <div
-          className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-semibold backdrop-blur ${
-            isInStock ? "bg-leaf-100/95 text-leaf-700" : "bg-red-100/95 text-red-700"
-          }`}
-        >
+      <article className="group flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-stone-200/60">
+        <Link to={`/products/${product._id}`} className="relative block h-52 overflow-hidden bg-stone-100/50">
+          <img
+            src={product?.image_url}
+            alt={product?.name || "Product"}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+          <div className="absolute left-3 top-3 rounded-md bg-white/95 px-3 py-1 text-xs font-semibold text-emerald-800 backdrop-blur">
+            {product?.category || "Other"}
+          </div>
+          <div
+            className={`absolute right-3 top-3 rounded-md px-3 py-1 text-xs font-semibold backdrop-blur ${
+              isInStock ? "bg-emerald-50/95 text-emerald-800" : "bg-red-100/95 text-red-700"
+            }`}
+          >
           {isInStock ? "In stock" : "Sold out"}
         </div>
       </Link>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex-1">
-          <Link to={`/products/${product._id}`}>
-            <h2 className="font-display text-lg font-bold text-bark transition hover:text-leaf-700">
-              {product?.name}
-            </h2>
-          </Link>
-
-          {sellerId && (
-            <Link
-              to={`/farmers/${sellerId}`}
-              className="mt-1 inline-flex items-center gap-1 text-xs text-mist transition hover:text-leaf-600"
-            >
-              <MapPin className="h-3 w-3" />
-              {sellerName}
-              {product?.seller_id?.location && ` · ${product.seller_id.location}`}
+            <Link to={`/products/${product._id}`}>
+              <h2 className="font-serif text-lg font-bold text-stone-900 transition hover:text-emerald-800">
+                {product?.name}
+              </h2>
             </Link>
-          )}
 
-          <p className="mt-2 line-clamp-2 text-sm text-mist">{product?.description}</p>
-        </div>
+            {sellerId && (
+              <Link
+                to={`/farmers/${sellerId}`}
+                className="mt-1 inline-flex items-center gap-1 text-xs text-stone-500 transition hover:text-emerald-700"
+              >
+                <MapPin className="h-3 w-3" />
+                {sellerName}
+                {product?.seller_id?.location && ` · ${product.seller_id.location}`}
+              </Link>
+            )}
 
-        <div className="flex items-end justify-between gap-2">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-mist">per {unit}</p>
-            <p className="font-display text-xl font-bold text-bark">{formatPrice(price)}</p>
+            <p className="mt-2 line-clamp-2 text-sm text-stone-500">{product?.description}</p>
+          </div>
+
+          <div className="flex items-end justify-between gap-2">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider text-stone-500">per {unit}</p>
+              <p className="font-serif text-xl font-bold text-stone-900">{formatPrice(price)}</p>
           </div>
         </div>
 

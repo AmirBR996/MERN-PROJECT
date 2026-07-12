@@ -169,21 +169,21 @@ export const Add_product = () => {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-leaf-50 via-parchment to-harvest-50 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl rounded-3xl border border-soil-200 bg-white/90 p-8 text-center shadow-xl shadow-soil-300/30 backdrop-blur">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-700">
+      <main className="min-h-screen bg-gradient-to-br from-emerald-50/40 via-stone-50 to-orange-50/40 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl rounded-xl border border-stone-200 bg-white/90 p-8 text-center shadow-sm backdrop-blur">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-md bg-emerald-50 text-emerald-800">
             <AlertCircle className="h-8 w-8" />
           </div>
-          <h1 className="font-display text-3xl font-bold text-bark">Login required</h1>
-          <p className="mt-4 text-base leading-7 text-mist">
+          <h1 className="font-serif text-3xl font-bold text-stone-900">Login required</h1>
+          <p className="mt-4 text-base leading-7 text-stone-500">
             Please sign in to manage products from your farmer dashboard.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/login" className="inline-flex items-center gap-2 rounded-2xl bg-leaf-600 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-leaf-700">
+            <Link to="/login" className="inline-flex items-center gap-2 rounded-md bg-stone-900 px-6 py-3 text-sm font-semibold text-amber-50 transition hover:-translate-y-0.5 hover:bg-emerald-800">
               Go to login
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/" className="inline-flex items-center gap-2 rounded-2xl border border-soil-200 px-6 py-3 text-sm font-semibold text-bark transition hover:border-leaf-300 hover:text-leaf-700">
+            <Link to="/" className="inline-flex items-center gap-2 rounded-md border border-stone-200 px-6 py-3 text-sm font-semibold text-stone-900 transition hover:border-emerald-600 hover:text-emerald-800">
               Back to home
             </Link>
           </div>
@@ -194,21 +194,21 @@ export const Add_product = () => {
 
   if (!isSeller) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-leaf-50 via-parchment to-harvest-50 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl rounded-3xl border border-soil-200 bg-white/90 p-8 text-center shadow-xl shadow-soil-300/30 backdrop-blur">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-harvest-100 text-harvest-700">
+      <main className="min-h-screen bg-gradient-to-br from-emerald-50/40 via-stone-50 to-orange-50/40 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl rounded-xl border border-stone-200 bg-white/90 p-8 text-center shadow-sm backdrop-blur">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-md bg-orange-50 text-orange-700">
             <Sprout className="h-8 w-8" />
           </div>
-          <h1 className="font-display text-3xl font-bold text-bark">Seller access only</h1>
-          <p className="mt-4 text-base leading-7 text-mist">
+          <h1 className="font-serif text-3xl font-bold text-stone-900">Seller access only</h1>
+          <p className="mt-4 text-base leading-7 text-stone-500">
             This dashboard is available for farmers and sellers who manage product listings.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/products" className="inline-flex items-center gap-2 rounded-2xl bg-leaf-600 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-leaf-700">
+            <Link to="/products" className="inline-flex items-center gap-2 rounded-md bg-stone-900 px-6 py-3 text-sm font-semibold text-amber-50 transition hover:-translate-y-0.5 hover:bg-emerald-800">
               Browse marketplace
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/" className="inline-flex items-center gap-2 rounded-2xl border border-soil-200 px-6 py-3 text-sm font-semibold text-bark transition hover:border-leaf-300 hover:text-leaf-700">
+            <Link to="/" className="inline-flex items-center gap-2 rounded-md border border-stone-200 px-6 py-3 text-sm font-semibold text-stone-900 transition hover:border-emerald-600 hover:text-emerald-800">
               Back to home
             </Link>
           </div>
@@ -218,24 +218,24 @@ export const Add_product = () => {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-leaf-50 via-parchment to-harvest-50 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-emerald-50/40 via-stone-50 to-orange-50/40 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -left-16 top-0 h-72 w-72 rounded-full bg-leaf-300/20 blur-3xl" />
-        <div className="absolute right-0 top-24 h-80 w-80 rounded-full bg-harvest-200/30 blur-3xl" />
+        <div className="absolute -left-16 top-0 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl" />
+        <div className="absolute right-0 top-24 h-80 w-80 rounded-full bg-orange-200/30 blur-3xl" />
       </div>
 
       <div className="relative mx-auto space-y-8">
-        <section className="overflow-hidden rounded-3xl border border-soil-200 bg-white/90 p-6 shadow-xl shadow-soil-300/30 backdrop-blur sm:p-8 lg:p-10">
+        <section className="overflow-hidden rounded-xl border border-stone-200 bg-white/90 p-6 shadow-sm backdrop-blur sm:p-8 lg:p-10">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl space-y-5">
-              <div className="inline-flex items-center gap-2 rounded-full border border-leaf-200 bg-leaf-50 px-4 py-2 text-sm font-semibold text-leaf-700">
+              <div className="inline-flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800">
                 <Package className="h-4 w-4" />
                 Farmer product manager
               </div>
-              <h1 className="font-display text-3xl font-bold text-bark sm:text-4xl">
+              <h1 className="font-serif text-3xl font-bold text-stone-900 sm:text-4xl">
                 Manage your harvest listings in one place
               </h1>
-              <p className="text-base leading-7 text-mist">
+              <p className="text-base leading-7 text-stone-500">
                 Add new produce, keep stock levels current, and see how your inventory is performing at a glance.
               </p>
             </div>
@@ -244,7 +244,7 @@ export const Add_product = () => {
               <button
                 type="button"
                 onClick={loadProducts}
-                className="inline-flex items-center gap-2 rounded-2xl border border-soil-200 px-5 py-3 text-sm font-semibold text-bark transition hover:border-leaf-300 hover:text-leaf-700"
+                className="inline-flex items-center gap-2 rounded-md border border-stone-200 px-5 py-3 text-sm font-semibold text-stone-900 transition hover:border-emerald-600 hover:text-emerald-800"
               >
                 <RefreshCw className="h-4 w-4" />
                 Refresh
@@ -261,9 +261,9 @@ export const Add_product = () => {
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {summary.map((item) => (
-              <div key={item.label} className="rounded-2xl border border-soil-200 bg-soil-50/60 p-5">
-                <p className="text-sm font-medium text-mist">{item.label}</p>
-                <p className="mt-2 font-display text-2xl font-bold text-bark">{item.value}</p>
+              <div key={item.label} className="rounded-md border border-stone-200 bg-stone-100/50 p-5">
+                <p className="text-sm font-medium text-stone-500">{item.label}</p>
+                <p className="mt-2 font-serif text-2xl font-bold text-stone-900">{item.value}</p>
               </div>
             ))}
           </div>
@@ -272,10 +272,10 @@ export const Add_product = () => {
             <div
               className={`mt-6 rounded-2xl border px-4 py-3 text-sm font-medium ${
                 messageType === "success"
-                  ? "border-leaf-200 bg-leaf-50 text-leaf-700"
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-800"
                   : messageType === "error"
                     ? "border-red-200 bg-red-50 text-red-700"
-                    : "border-harvest-200 bg-harvest-50 text-harvest-800"
+                    : "border-orange-200 bg-orange-50 text-orange-800"
               }`}
             >
               {message}
@@ -284,13 +284,13 @@ export const Add_product = () => {
         </section>
 
         <section className="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-3xl border border-soil-200 bg-white/90 p-6 shadow-xl shadow-soil-300/30 backdrop-blur sm:p-8">
+          <div className="rounded-xl border border-stone-200 bg-white/90 p-6 shadow-sm backdrop-blur sm:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-leaf-600">
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-800">
                   {editingProductId ? "Edit product" : "Add product"}
                 </p>
-                <h2 className="mt-2 font-display text-2xl font-bold text-bark">
+                <h2 className="mt-2 font-serif text-2xl font-bold text-stone-900">
                   {editingProductId ? "Update listing details" : "Create a new listing"}
                 </h2>
               </div>
@@ -298,7 +298,7 @@ export const Add_product = () => {
                 <button
                   type="button"
                   onClick={clearForm}
-                  className="rounded-full border border-soil-200 px-4 py-2 text-sm font-semibold text-mist transition hover:border-soil-300 hover:text-bark"
+                  className="rounded-md border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-500 transition hover:border-stone-300 hover:text-stone-900"
                 >
                   Cancel edit
                 </button>
@@ -322,12 +322,12 @@ export const Add_product = () => {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="text-sm font-semibold text-bark">Category</label>
+                  <label className="text-sm font-semibold text-stone-900">Category</label>
                   <select
                     name="category"
                     value={form.category}
                     onChange={handleChange}
-                    className="mt-1.5 w-full rounded-xl border border-soil-200 bg-white px-4 py-3 text-sm text-bark outline-none transition focus:border-leaf-500 focus:ring-2 focus:ring-leaf-200"
+                    className="mt-1.5 w-full rounded-md border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
                   >
                     {categoryOptions.map((category) => (
                       <option key={category} value={category}>
@@ -351,7 +351,7 @@ export const Add_product = () => {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-leaf-600 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-leaf-600/20 transition hover:-translate-y-0.5 hover:bg-leaf-700 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
+                  className="inline-flex items-center gap-2 rounded-md bg-stone-900 px-6 py-3 text-sm font-semibold text-amber-50 shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
                 >
                   <Plus className="h-4 w-4" />
                   {saving ? "Saving..." : editingProductId ? "Save changes" : "Add product"}
@@ -359,7 +359,7 @@ export const Add_product = () => {
                 <button
                   type="button"
                   onClick={clearForm}
-                  className="rounded-2xl border border-soil-200 px-6 py-3 text-sm font-semibold text-bark transition hover:border-leaf-300 hover:text-leaf-700"
+                  className="rounded-md border border-stone-200 px-6 py-3 text-sm font-semibold text-stone-900 transition hover:border-emerald-600 hover:text-emerald-800"
                 >
                   Clear form
                 </button>
@@ -367,30 +367,30 @@ export const Add_product = () => {
             </form>
           </div>
 
-          <div className="rounded-3xl border border-soil-200 bg-white/90 p-6 shadow-xl shadow-soil-300/30 backdrop-blur sm:p-8">
+          <div className="rounded-xl border border-stone-200 bg-white/90 p-6 shadow-sm backdrop-blur sm:p-8">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-leaf-600">
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-800">
                   Your inventory
                 </p>
-                <h2 className="mt-2 font-display text-2xl font-bold text-bark">
+                <h2 className="mt-2 font-serif text-2xl font-bold text-stone-900">
                   Products you can edit anytime
                 </h2>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-soil-100 px-4 py-2 text-sm font-semibold text-bark">
-                <TrendingUp className="h-4 w-4 text-leaf-600" />
+              <div className="inline-flex items-center gap-2 rounded-md bg-stone-100/50 px-4 py-2 text-sm font-semibold text-stone-900">
+                <TrendingUp className="h-4 w-4 text-emerald-800" />
                 {products.length} active listings
               </div>
             </div>
 
             {loading ? (
-              <div className="rounded-2xl border border-dashed border-soil-200 bg-soil-50/50 p-12 text-center text-mist">
+              <div className="rounded-xl border border-dashed border-stone-200 bg-stone-100/50 p-12 text-center text-stone-500">
                 Loading your products...
               </div>
             ) : products.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-soil-200 bg-soil-50/50 p-12 text-center">
-                <h3 className="font-display text-xl font-bold text-bark">No products yet</h3>
-                <p className="mt-3 text-mist">
+              <div className="rounded-xl border border-dashed border-stone-200 bg-stone-100/50 p-12 text-center">
+                <h3 className="font-serif text-xl font-bold text-stone-900">No products yet</h3>
+                <p className="mt-3 text-stone-500">
                   Add your first product to start selling on the marketplace.
                 </p>
               </div>
@@ -415,11 +415,11 @@ export const Add_product = () => {
 
 const Field = ({ label, name, value, onChange, placeholder, type = "text", textarea = false }) => {
   const sharedClasses =
-    "mt-1.5 w-full rounded-xl border border-soil-200 bg-white px-4 py-3 text-sm text-bark outline-none transition placeholder:text-mist focus:border-leaf-500 focus:ring-2 focus:ring-leaf-200";
+    "mt-1.5 w-full rounded-md border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200";
 
   return (
     <div>
-      <label className="text-sm font-semibold text-bark">{label}</label>
+      <label className="text-sm font-semibold text-stone-900">{label}</label>
       {textarea ? (
         <textarea
           name={name}

@@ -59,20 +59,20 @@ const CheckoutPage = () => {
   if (items.length === 0) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-leaf-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-800" />
       </div>
     );
   }
 
   return (
     <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="font-display text-3xl font-bold text-bark">Checkout</h1>
-      <p className="mt-1 text-mist">Where should we deliver your order?</p>
+      <h1 className="font-serif text-3xl font-bold text-stone-900">Checkout</h1>
+      <p className="mt-1 text-stone-500">Where should we deliver your order?</p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
         <form onSubmit={handleSubmit} className="space-y-4 lg:col-span-2">
-          <div className="rounded-2xl border border-soil-200 bg-white p-6">
-            <h2 className="font-display text-lg font-bold text-bark">Delivery Address</h2>
+          <div className="rounded-xl border border-stone-200 bg-white p-6">
+            <h2 className="font-serif text-lg font-bold text-stone-900">Delivery Address</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <Input

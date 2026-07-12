@@ -5,12 +5,12 @@ import { formatPrice } from "../../utils/helpers";
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   return (
-    <div className="flex gap-4 rounded-2xl border border-soil-200 bg-white p-4">
+    <div className="flex gap-4 rounded-xl border border-stone-200 bg-white p-4">
       <Link to={`/products/${item.product_id}`} className="shrink-0">
         <img
           src={item.image_url}
           alt={item.name}
-          className="h-20 w-20 rounded-xl object-cover"
+          className="h-20 w-20 rounded-md object-cover"
         />
       </Link>
 
@@ -18,15 +18,15 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
         <div>
           <Link
             to={`/products/${item.product_id}`}
-            className="font-display font-bold text-bark hover:text-leaf-700"
+            className="font-serif font-bold text-stone-900 hover:text-emerald-800"
           >
             {item.name}
           </Link>
-          <p className="text-sm text-mist">
+          <p className="text-sm text-stone-500">
             {item.seller_name}
             {item.seller_location && ` · ${item.seller_location}`}
           </p>
-          <p className="mt-1 text-sm font-semibold text-leaf-700">
+          <p className="mt-1 text-sm font-semibold text-emerald-800">
             {formatPrice(item.price)} / {item.unit}
           </p>
         </div>
@@ -40,7 +40,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
           <button
             type="button"
             onClick={() => onRemove(item.product_id)}
-            className="rounded-lg p-2 text-mist transition hover:bg-red-50 hover:text-red-600"
+            className="rounded-md p-2 text-stone-500 transition hover:bg-red-50 hover:text-red-600"
             aria-label="Remove item"
           >
             <Trash2 className="h-4 w-4" />
@@ -48,7 +48,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
         </div>
       </div>
 
-      <div className="hidden text-right font-semibold text-bark sm:block">
+      <div className="hidden text-right font-semibold text-stone-900 sm:block">
         {formatPrice(item.price * item.quantity)}
       </div>
     </div>

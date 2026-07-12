@@ -28,13 +28,13 @@ const ProductPage = ({ searchQuery = "" }) => {
   return (
     <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8 max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-widest text-leaf-600">
+        <p className="text-sm font-semibold uppercase tracking-widest text-emerald-800">
           Marketplace
         </p>
-        <h1 className="mt-2 font-display text-4xl font-bold text-bark sm:text-5xl">
+        <h1 className="mt-2 font-serif text-4xl font-bold text-stone-900 sm:text-5xl">
           Fresh from Nepali farms
         </h1>
-        <p className="mt-3 text-mist leading-relaxed">
+        <p className="mt-3 text-stone-500 leading-relaxed">
           Browse vegetables, fruits, grains, and dairy listed directly by local farmers.
         </p>
       </div>
@@ -44,7 +44,7 @@ const ProductPage = ({ searchQuery = "" }) => {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          className="rounded-xl border border-soil-200 bg-white px-4 py-2.5 text-sm text-bark outline-none focus:border-leaf-500"
+          className="rounded-md border border-stone-200 bg-white px-4 py-2.5 text-sm text-stone-900 outline-none focus:border-emerald-600"
         >
           {SORT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>

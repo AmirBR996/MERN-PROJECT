@@ -112,8 +112,8 @@ const RegisterForm = () => {
     return (
       <div className="flex flex-col gap-4">
         <div>
-          <h2 className="font-display text-xl font-bold text-bark">Verify your email</h2>
-          <p className="mt-1 text-sm text-mist">Step 2 of 2 — confirm it&apos;s really you</p>
+          <h2 className="font-serif text-xl font-bold text-stone-900">Verify your email</h2>
+          <p className="mt-1 text-sm text-stone-500">Step 2 of 2 — confirm it&apos;s really you</p>
         </div>
         <OtpVerification
           email={formData.email}
@@ -124,12 +124,12 @@ const RegisterForm = () => {
           error={otpError}
         />
         {devOtp && (
-          <div className="rounded-xl border border-harvest-200 bg-harvest-50 px-4 py-3 text-center">
-            <p className="text-xs font-semibold uppercase tracking-wide text-harvest-700">
+          <div className="rounded-md border border-orange-200 bg-orange-50 px-4 py-3 text-center">
+            <p className="text-xs font-semibold uppercase tracking-wide text-orange-700">
               Development mode
             </p>
-            <p className="mt-1 text-sm text-harvest-800">{devNotice}</p>
-            <p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-bark">{devOtp}</p>
+            <p className="mt-1 text-sm text-orange-800">{devNotice}</p>
+            <p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-stone-900">{devOtp}</p>
           </div>
         )}
         <button
@@ -138,7 +138,7 @@ const RegisterForm = () => {
             setStep("form");
             setOtpError("");
           }}
-          className="text-sm text-mist hover:text-bark"
+          className="text-sm text-stone-500 hover:text-stone-900"
         >
           ← Back to registration form
         </button>

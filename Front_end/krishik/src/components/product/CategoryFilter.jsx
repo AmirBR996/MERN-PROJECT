@@ -8,10 +8,10 @@ const CategoryFilter = ({ selected, onChange }) => {
           key={cat}
           type="button"
           onClick={() => onChange(cat)}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+          className={`rounded-md px-4 py-2 text-sm font-medium transition ${
             selected === cat
-              ? "bg-leaf-600 text-white shadow-md shadow-leaf-600/20"
-              : "bg-white text-mist border border-soil-200 hover:border-leaf-300 hover:text-leaf-700"
+              ? "bg-emerald-800 text-white shadow-sm"
+              : "bg-white text-stone-500 border border-stone-200 hover:border-emerald-600 hover:text-emerald-800"
           }`}
         >
           {cat}
