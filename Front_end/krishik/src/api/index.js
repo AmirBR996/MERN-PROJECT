@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.PROD ? "" : "https://krishik-bazar-backend.onrender.com",
+  baseURL: import.meta.env.PROD ? "" : "http://localhost:8080",
   headers: {
     "Content-Type": "application/json",
   },
