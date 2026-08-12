@@ -27,6 +27,7 @@ const NavBar = ({ searchQuery = "", onSearchChange }) => {
   const navLinks = [
     { to: "/", label: "Home" },
     { to: "/products", label: "Marketplace" },
+    { to: "/vegetables", label: "Vegetable Rates" },
     ...(user?.user_type === "seller"
       ? [{ to: "/my-products", label: "My Products" }]
       : []),

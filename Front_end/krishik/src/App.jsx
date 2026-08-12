@@ -18,6 +18,7 @@ import OrdersPage from "./pages/orders_page";
 import OrderDetailPage from "./pages/order_detail_page";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Add_product } from "./pages/add_product";
+import VegetablePricesPage from "./pages/vegetable_prices_page.jsx";
 
 function AppContent() {
   const location = useLocation();
@@ -83,9 +84,10 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          <Route path="/my-products" element={<Add_product />} />
-          <Route path="/add-product" element={<Add_product />} />
-        </Routes>
+  <Route path="/my-products" element={<Add_product />} />
+  <Route path="/add-product" element={<Add_product />} />
+  <Route path="/vegetables" element={<VegetablePricesPage />} />
+</Routes>
       </main>
 
       <Footer />
