@@ -1,81 +1,30 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ArrowDownToLine,
-  ArrowUpToLine,
+  Activity,
+  ArrowRight,
   BarChart3,
+  Calendar,
+  Leaf,
   RefreshCw,
   Search,
+  TrendingDown,
   TrendingUp,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { getTodayVegetables, getVegetableHistory, syncVegetables } from "../api/vegetable.api.js";
+import {
+  getTodayVegetables,
+  getVegetableHistory,
+  syncVegetables,
+} from "../api/vegetable.api.js";
 
-const formatCurrency = (value) =>
-  `Rs. ${Number(value).toLocaleString("en-NP")}`;
+const formatCurrency = (value) => `Rs. ${Number(value).toLocaleString("en-NP")}`;
 
 const formatDate = (date) => {
-  const d = new Date(date);
-  return d.toLocaleDateString("en-NP", {
+  return new Date(date).toLocaleDateString("en-NP", {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   });
-};
-
-const PriceChart = ({ history }) => {
-  const data = useMemo(() => {
-    return [...history]
-      .reverse()
-      .map((item) => ({
-        date: new Date(item.date).toLocaleDateString("en-NP", {
-          month: "short",
-          day: "numeric",
-        }),
-        minimum: item.minimum,
-        maximum: item.maximum,
-        average: item.average,
-      }));
-  }, [history]);
-
-  if (!data.length) return null;
-
-  const maxVal = Math.max(...data.map((d) => d.maximum));
-  const minVal = Math.min(...data.map((d) => d.minimum));
-  const range = maxVal - minVal || 1;
-
-  return (
-    <div className="mt-6 rounded-xl border border-stone-200 bg-white p-4 sm:p-6 shadow-sm">
-      <h3 className="font-serif text-lg font-bold text-stone-900">Price Trend</h3>
-      <p className="text-xs text-stone-500 font-sans">Last {data.length} records</p>
-      <div className="mt-4 flex items-end gap-2 overflow-x-auto pb-2">
-        {data.map((point, idx) => {
-          const avgHeight = ((point.average - minVal) / range) * 100;
-          const minHeight = ((point.minimum - minVal) / range) * 100;
-          const maxHeight = ((point.maximum - minVal) / range) * 100;
-
-          return (
-            <div
-              key={idx}
-              className="flex min-w-[48px] flex-col items-center gap-1"
-            >
-              <span className="text-[10px] font-medium text-stone-600">
-                {formatCurrency(point.average)}
-              </span>
-              <div className="flex flex-col items-center gap-0.5">
-                <ArrowDownToLine className="h-3 w-3 text-leaf-600" style={{ height: `${maxHeight * 0.5}px` }} />
-                <div
-                  className="w-3 rounded-full bg-harvest-500"
-                  style={{ height: `${Math.max(4, avgHeight * 0.6)}px` }}
-                />
-                <ArrowUpToLine className="h-3 w-3 text-orange-600" style={{ height: `${minHeight * 0.5}px` }} />
-              </div>
-              <span className="text-[10px] text-stone-500">{point.date}</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
 };
 
 export default function VegetablePricesPage() {
@@ -97,7 +46,7 @@ export default function VegetablePricesPage() {
       const safe = Array.isArray(data) ? data : [];
       setItems(safe);
       setFilteredItems(safe);
-    } catch (err) {
+    } catch {
       setError("Unable to load vegetable prices. Please try again later.");
     } finally {
       setLoading(false);
@@ -111,257 +60,287 @@ export default function VegetablePricesPage() {
   useEffect(() => {
     const query = search.trim().toLowerCase();
     setFilteredItems(
-      query
-        ? items.filter((item) => item?.name?.toLowerCase().includes(query))
-        : items
+      query ? items.filter((item) => item?.name?.toLowerCase().includes(query)) : items
     );
   }, [search, items]);
+
+  useEffect(() => {
+    if (!filteredItems.length) {
+      setSelectedVegetable(null);
+      setHistory([]);
+      return;
+    }
+
+    const exists = filteredItems.some((item) => item.name === selectedVegetable);
+    if (!selectedVegetable || !exists) {
+      setSelectedVegetable(filteredItems[0].name);
+    }
+  }, [filteredItems, selectedVegetable]);
+
+  useEffect(() => {
+    if (!selectedVegetable) return;
+
+    let ignore = false;
+    const loadHistory = async () => {
+      setHistoryLoading(true);
+      try {
+        const data = await getVegetableHistory(selectedVegetable, { limit: 30 });
+        if (!ignore) setHistory(Array.isArray(data) ? data : []);
+      } catch {
+        if (!ignore) setHistory([]);
+      } finally {
+        if (!ignore) setHistoryLoading(false);
+      }
+    };
+
+    loadHistory();
+    return () => {
+      ignore = true;
+    };
+  }, [selectedVegetable]);
 
   const handleRefresh = async () => {
     setSyncing(true);
     try {
       const result = await syncVegetables();
-      toast.success(`Synced ${result.total} prices. Saved: ${result.savedCount}`);
+      toast.success(`Synced ${result.total} prices.`);
       await loadTodayPrices();
-    } catch (err) {
+    } catch {
       toast.error("Sync failed. Please try again.");
     } finally {
       setSyncing(false);
     }
   };
 
-  const handleSelectVegetable = async (name) => {
-    setSelectedVegetable(name);
-    setHistoryLoading(true);
-    try {
-      const data = await getVegetableHistory(name, { limit: 30 });
-      setHistory(Array.isArray(data) ? data : []);
-    } catch {
-      setHistory([]);
-    } finally {
-      setHistoryLoading(false);
-    }
-  };
+  const stats = useMemo(() => {
+    if (!items.length) return { total: 0, highest: null, lowest: null };
+    const highest = items.reduce(
+      (max, item) => (Number(item.average) > Number(max.average) ? item : max),
+      items[0]
+    );
+    const lowest = items.reduce(
+      (min, item) => (Number(item.average) < Number(min.average) ? item : min),
+      items[0]
+    );
+    return { total: items.length, highest, lowest };
+  }, [items]);
 
-  const todayFormatted = useMemo(
-    () => formatDate(new Date()),
-    []
+  const selectedDetails = useMemo(
+    () => items.find((item) => item?.name === selectedVegetable) || null,
+    [items, selectedVegetable]
   );
 
   return (
-    <div className="w-full min-h-screen bg-stone-50 text-stone-800 font-serif">
-      <section className="border-b border-stone-200 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-emerald-800 font-sans">
-                Market Prices
-              </p>
-              <h1 className="mt-2 text-3xl font-normal text-stone-900 sm:text-4xl">
-                Vegetable Prices Today
-              </h1>
-              <p className="mt-2 text-sm font-sans text-stone-600">
-                Updated rates from RamroPatro — {todayFormatted}
-              </p>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      {/* Top Header */}
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8">
+          <div>
+            <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm">
+              <Leaf className="h-4 w-4" /> Market Overview
             </div>
-            <button
-              type="button"
-              onClick={handleRefresh}
-              disabled={syncing}
-              className="inline-flex items-center gap-2 self-start rounded-md border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium font-sans text-stone-700 transition hover:bg-stone-50 disabled:opacity-60"
-            >
-              <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-              {syncing ? "Syncing..." : "Refresh Prices"}
-            </button>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Vegetable Wholesale Prices
+            </h1>
           </div>
+          <button
+            type="button"
+            onClick={handleRefresh}
+            disabled={syncing}
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-700 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+            {syncing ? "Syncing..." : "Sync Prices"}
+          </button>
         </div>
-      </section>
+      </header>
 
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full sm:max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
-            <input
-              type="text"
-              placeholder="Search vegetables..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-md border border-stone-300 bg-white pl-10 pr-4 py-2.5 text-sm font-sans text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-emerald-800"
-            />
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Metric Overview */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Total Listed
+            </span>
+            <div className="mt-2 flex items-baseline justify-between">
+              <span className="text-3xl font-bold text-slate-900">{stats.total}</span>
+              <BarChart3 className="h-5 w-5 text-slate-400" />
+            </div>
           </div>
-          <p className="text-xs font-sans text-stone-500">
-            {filteredItems.length}{" "}
-            {filteredItems.length === 1 ? "item" : "items"} found
-          </p>
-        </div>
 
-        {loading ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse rounded-xl border border-stone-200 bg-white p-5"
-              >
-                <div className="h-5 w-2/3 rounded bg-stone-100/50" />
-                <div className="mt-4 h-4 w-1/2 rounded bg-stone-100/50" />
-                <div className="mt-2 h-4 w-1/3 rounded bg-stone-100/50" />
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Highest Average
+            </span>
+            <div className="mt-2 flex items-baseline justify-between">
+              <div>
+                <span className="text-2xl font-bold text-slate-900">
+                  {stats.highest ? formatCurrency(stats.highest.average) : "-"}
+                </span>
+                <p className="text-xs text-slate-500 mt-0.5">{stats.highest?.name || "N/A"}</p>
               </div>
-            ))}
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-stone-200 bg-stone-100/50 px-6 py-16 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-md bg-emerald-50 text-emerald-800">
-              <BarChart3 className="h-8 w-8" />
+              <TrendingUp className="h-5 w-5 text-rose-500" />
             </div>
-            <h3 className="font-serif text-xl font-bold text-stone-900">Something went wrong</h3>
-            <p className="mt-2 max-w-sm text-sm text-stone-500">{error}</p>
-            <button
-              type="button"
-              onClick={loadTodayPrices}
-              className="mt-6 inline-flex items-center gap-2 rounded-md bg-stone-900 px-5 py-2.5 text-sm font-semibold text-amber-50 transition hover:bg-emerald-800"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Try Again
-            </button>
           </div>
-        ) : filteredItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-stone-200 bg-stone-100/50 px-6 py-16 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-md bg-emerald-50 text-emerald-800">
-              <Search className="h-8 w-8" />
+
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Lowest Average
+            </span>
+            <div className="mt-2 flex items-baseline justify-between">
+              <div>
+                <span className="text-2xl font-bold text-slate-900">
+                  {stats.lowest ? formatCurrency(stats.lowest.average) : "-"}
+                </span>
+                <p className="text-xs text-slate-500 mt-0.5">{stats.lowest?.name || "N/A"}</p>
+              </div>
+              <TrendingDown className="h-5 w-5 text-emerald-500" />
             </div>
-            <h3 className="font-serif text-xl font-bold text-stone-900">No vegetables found</h3>
-            <p className="mt-2 max-w-sm text-sm text-stone-500">
-              {search ? "Try adjusting your search terms." : "No price data is available yet."}
-            </p>
-            {!search && (
-              <button
-                type="button"
-                onClick={handleRefresh}
-                className="mt-6 inline-flex items-center gap-2 rounded-md bg-stone-900 px-5 py-2.5 text-sm font-semibold text-amber-50 transition hover:bg-emerald-800"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Refresh Prices
-              </button>
-            )}
           </div>
-        ) : (
-          <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredItems.map((item) => (
-                <button
-                  key={`${item.name}-${item.unit}-${item.date}`}
-                  type="button"
-                  onClick={() => handleSelectVegetable(item.name)}
-                  className={`rounded-xl border bg-white p-5 text-left transition hover:border-emerald-800 hover:shadow-sm ${
-                    selectedVegetable === item.name
-                      ? "border-emerald-800 ring-1 ring-emerald-800"
-                      : "border-stone-200"
-                  }`}
-                >
-                  <h3 className="font-serif text-base font-bold text-stone-900 line-clamp-2">
-                    {item.name}
-                  </h3>
-                  <p className="mt-1 text-xs font-sans text-stone-500">
-                    Unit: {item.unit}
-                  </p>
-                  <div className="mt-4 grid grid-cols-2 gap-2 font-sans text-xs">
-                    <div>
-                      <p className="text-stone-500">Min</p>
-                      <p className="font-semibold text-leaf-700">
-                        {formatCurrency(item.minimum)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-stone-500">Max</p>
-                      <p className="font-semibold text-orange-700">
-                        {formatCurrency(item.maximum)}
-                      </p>
-                    </div>
-                    <div className="col-span-2">
-                      <p className="text-stone-500">Average</p>
-                      <p className="font-semibold text-harvest-600">
-                        {formatCurrency(item.average)}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              ))}
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="mt-8 grid gap-8 lg:grid-cols-12">
+          {/* Item List Column */}
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search vegetables..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+              />
             </div>
 
-            {selectedVegetable && (
-              <div className="mt-10 rounded-xl border border-stone-200 bg-white p-4 sm:p-6 shadow-sm">
-                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <div className="h-[600px] overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-xs">
+              {loading ? (
+                <div className="flex h-full items-center justify-center text-sm text-slate-500">
+                  Loading items...
+                </div>
+              ) : error ? (
+                <div className="p-4 text-center text-sm text-rose-600">{error}</div>
+              ) : filteredItems.length === 0 ? (
+                <div className="p-4 text-center text-sm text-slate-500">No items found.</div>
+              ) : (
+                <div className="space-y-1">
+                  {filteredItems.map((item) => {
+                    const active = selectedVegetable === item.name;
+                    return (
+                      <button
+                        key={`${item.name}-${item.unit}`}
+                        type="button"
+                        onClick={() => setSelectedVegetable(item.name)}
+                        className={`w-full rounded-lg px-4 py-3 text-left transition flex items-center justify-between ${
+                          active
+                            ? "bg-emerald-50 text-emerald-900 font-medium"
+                            : "hover:bg-slate-50 text-slate-700"
+                        }`}
+                      >
+                        <div>
+                          <p className="text-sm font-semibold">{item.name}</p>
+                          <p className="text-xs text-slate-500">Per {item.unit}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-slate-900">
+                            {formatCurrency(item.average)}
+                          </p>
+                          <span className="text-[11px] text-slate-500">
+                            Min: {formatCurrency(item.minimum)}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Details & History Column */}
+          <div className="lg:col-span-7">
+            {selectedDetails ? (
+              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs">
+                {/* Header */}
+                <div className="flex items-start justify-between border-b border-slate-100 pb-4">
                   <div>
-                    <h3 className="font-serif text-xl font-bold text-stone-900">
-                      {selectedVegetable}
-                    </h3>
-                    <p className="text-xs font-sans text-stone-500">
-                      Price history from the database
+                    <h2 className="text-xl font-bold text-slate-900">{selectedDetails.name}</h2>
+                    <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5" /> Updated: {formatDate(selectedDetails.date)}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedVegetable(null);
-                      setHistory([]);
-                    }}
-                    className="text-xs font-sans text-stone-500 underline hover:text-stone-900"
-                  >
-                    Close history
-                  </button>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                    Unit: {selectedDetails.unit}
+                  </span>
                 </div>
 
-                {historyLoading ? (
-                  <div className="mt-6 flex h-32 items-center justify-center text-sm text-stone-500">
-                    Loading history...
+                {/* Rates Highlight */}
+                <div className="mt-6 grid grid-cols-3 gap-4 rounded-lg bg-slate-50 p-4 text-center">
+                  <div>
+                    <span className="text-xs font-medium text-slate-500 uppercase">Min Price</span>
+                    <p className="mt-1 text-lg font-bold text-emerald-600">
+                      {formatCurrency(selectedDetails.minimum)}
+                    </p>
                   </div>
-                ) : history.length === 0 ? (
-                  <div className="mt-6 text-center text-sm text-stone-500">
-                    No historical data available yet.
+                  <div className="border-x border-slate-200">
+                    <span className="text-xs font-medium text-slate-500 uppercase">Average</span>
+                    <p className="mt-1 text-lg font-bold text-slate-900">
+                      {formatCurrency(selectedDetails.average)}
+                    </p>
                   </div>
-                ) : (
-                  <>
-                    <PriceChart history={history} />
-                    <div className="mt-4 overflow-x-auto">
-                      <table className="w-full text-left text-sm font-sans">
-                        <thead>
-                          <tr className="border-b border-stone-200 text-stone-500">
-                            <th className="py-2 pr-4 font-medium">Date</th>
-                            <th className="py-2 pr-4 font-medium">Min</th>
-                            <th className="py-2 pr-4 font-medium">Max</th>
-                            <th className="py-2 font-medium">Avg</th>
+                  <div>
+                    <span className="text-xs font-medium text-slate-500 uppercase">Max Price</span>
+                    <p className="mt-1 text-lg font-bold text-amber-600">
+                      {formatCurrency(selectedDetails.maximum)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* History Table */}
+                <div className="mt-6">
+                  <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-slate-500" /> Historical Log
+                  </h3>
+                  {historyLoading ? (
+                    <div className="py-8 text-center text-sm text-slate-500">Loading history...</div>
+                  ) : history.length === 0 ? (
+                    <div className="py-8 text-center text-sm text-slate-500">No history available.</div>
+                  ) : (
+                    <div className="overflow-hidden rounded-lg border border-slate-200">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
+                          <tr>
+                            <th className="px-4 py-2.5">Date</th>
+                            <th className="px-4 py-2.5">Min</th>
+                            <th className="px-4 py-2.5">Max</th>
+                            <th className="px-4 py-2.5">Avg</th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-slate-100">
                           {history.map((record) => (
-                            <tr
-                              key={`${record._id}-${record.date}`}
-                              className="border-b border-stone-100 last:border-0"
-                            >
-                              <td className="py-2 pr-4 text-stone-900">
-                                {formatDate(record.date)}
-                              </td>
-                              <td className="py-2 pr-4 text-leaf-700">
-                                {formatCurrency(record.minimum)}
-                              </td>
-                              <td className="py-2 pr-4 text-orange-700">
-                                {formatCurrency(record.maximum)}
-                              </td>
-                              <td className="py-2 text-harvest-600">
-                                {formatCurrency(record.average)}
-                              </td>
+                            <tr key={`${record._id}-${record.date}`} className="hover:bg-slate-50/50">
+                              <td className="px-4 py-2.5 text-slate-700">{formatDate(record.date)}</td>
+                              <td className="px-4 py-2.5 text-emerald-600">{formatCurrency(record.minimum)}</td>
+                              <td className="px-4 py-2.5 text-amber-600">{formatCurrency(record.maximum)}</td>
+                              <td className="px-4 py-2.5 font-medium text-slate-900">{formatCurrency(record.average)}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
-                  </>
-                )}
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex h-full min-h-[400px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white p-8 text-center">
+                <Leaf className="h-8 w-8 text-slate-300" />
+                <p className="mt-2 text-sm font-medium text-slate-600">Select an item from the list to see pricing details.</p>
               </div>
             )}
-          </>
-        )}
-      </section>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

@@ -45,15 +45,19 @@ export const getTodayVegetables = async (req, res) => {
   try {
     const latest = await VegetablePrice.findOne().sort({ date: -1 }).lean();
 
-    if (!latest) {
-      return res.json([]);
-    }
+    if (!latest) return res.json([]);
 
-    const items = await VegetablePrice.find({ date: latest.date })
+    // Match any entry that falls on the same calendar day as the latest record.
+    const dayStart = new Date(latest.date);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(latest.date);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    const items = await VegetablePrice.find({ date: { $gte: dayStart, $lte: dayEnd } })
       .sort({ name: 1 })
       .lean();
 
-    res.json(items);
+    return res.json(items);
   } catch (error) {
     console.error("Error fetching today vegetables:", error);
     res.status(500).json({ message: "Server error" });

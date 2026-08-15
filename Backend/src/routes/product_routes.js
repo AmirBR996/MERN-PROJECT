@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticate } from "../middlewares/auth_middleware.js";
+import { authenticate } from "../controller/middlewares/auth_middleware.js";
 import { getAllProducts, getProductById, getMyProducts, deleteProduct, updateProduct, createProduct } from "../controller/product_controller.js";
 const router = express.Router();
 router.get("/mine", authenticate, getMyProducts);
