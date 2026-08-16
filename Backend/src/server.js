@@ -13,11 +13,25 @@ import { startVegetableSyncCron } from "./services/sync.service.js";
 
 const app = express();
 
-app.use(cors({
-  origin: "https://krishik-bazar.vercel.app",
-  credentials: true
-}));
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://krishik-bazar.vercel.app",
+  "https://krishik-bazar-3sv7y4p72-amirbr996s-projects.vercel.app",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked: ${origin}`));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 connectDb();
