@@ -17,7 +17,7 @@ const app = express();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
-  : ["http://localhost:5173"];
+  : ["https://krishik-bazar.vercel.app"];
 
 app.use(
   cors({
