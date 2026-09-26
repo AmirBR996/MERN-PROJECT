@@ -1,6 +1,6 @@
 import { Navigate, useLocation, Link } from "react-router-dom";
 import { useContext } from "react";
-import { AuthContext } from "../components/footer./authcontext.jsx";
+import { AuthContext } from "../components/footer/authcontext.jsx";
 import Button from "./ui/Button";
 
 const ProtectedRoute = ({ children, role }) => {

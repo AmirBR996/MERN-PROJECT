@@ -131,16 +131,14 @@ export default function VegetablePricesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-green-800">
       {/* Top Header */}
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8">
           <div>
-            <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm">
-              <Leaf className="h-4 w-4" /> Market Overview
-            </div>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Vegetable Wholesale Prices
+           
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-green-700 sm:text-3xl">
+              Today Wholesale Prices
             </h1>
           </div>
           <button
@@ -163,7 +161,7 @@ export default function VegetablePricesPage() {
               Total Listed
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="text-3xl font-bold text-slate-900">{stats.total}</span>
+              <span className="text-3xl font-bold text-green-800">{stats.total}</span>
               <BarChart3 className="h-5 w-5 text-slate-400" />
             </div>
           </div>
@@ -174,7 +172,7 @@ export default function VegetablePricesPage() {
             </span>
             <div className="mt-2 flex items-baseline justify-between">
               <div>
-                <span className="text-2xl font-bold text-slate-900">
+                <span className="text-2xl font-bold text-green-800">
                   {stats.highest ? formatCurrency(stats.highest.average) : "-"}
                 </span>
                 <p className="text-xs text-slate-500 mt-0.5">{stats.highest?.name || "N/A"}</p>
@@ -189,7 +187,7 @@ export default function VegetablePricesPage() {
             </span>
             <div className="mt-2 flex items-baseline justify-between">
               <div>
-                <span className="text-2xl font-bold text-slate-900">
+                <span className="text-2xl font-bold text-green-800">
                   {stats.lowest ? formatCurrency(stats.lowest.average) : "-"}
                 </span>
                 <p className="text-xs text-slate-500 mt-0.5">{stats.lowest?.name || "N/A"}</p>
@@ -210,7 +208,7 @@ export default function VegetablePricesPage() {
                 placeholder="Search vegetables..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                className="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-green-800 outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
               />
             </div>
 
@@ -243,7 +241,7 @@ export default function VegetablePricesPage() {
                           <p className="text-xs text-slate-500">Per {item.unit}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-semibold text-slate-900">
+                          <p className="text-sm font-semibold text-green-800">
                             {formatCurrency(item.average)}
                           </p>
                           <span className="text-[11px] text-slate-500">
@@ -265,7 +263,7 @@ export default function VegetablePricesPage() {
                 {/* Header */}
                 <div className="flex items-start justify-between border-b border-slate-100 pb-4">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900">{selectedDetails.name}</h2>
+                    <h2 className="text-xl font-bold text-green-800">{selectedDetails.name}</h2>
                     <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
                       <Calendar className="h-3.5 w-3.5" /> Updated: {formatDate(selectedDetails.date)}
                     </p>
@@ -285,7 +283,7 @@ export default function VegetablePricesPage() {
                   </div>
                   <div className="border-x border-slate-200">
                     <span className="text-xs font-medium text-slate-500 uppercase">Average</span>
-                    <p className="mt-1 text-lg font-bold text-slate-900">
+                    <p className="mt-1 text-lg font-bold text-green-800">
                       {formatCurrency(selectedDetails.average)}
                     </p>
                   </div>
@@ -299,7 +297,7 @@ export default function VegetablePricesPage() {
 
                 {/* History Table */}
                 <div className="mt-6">
-                  <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-green-800 mb-3 flex items-center gap-2">
                     <Activity className="h-4 w-4 text-slate-500" /> Historical Log
                   </h3>
                   {historyLoading ? (
@@ -323,7 +321,7 @@ export default function VegetablePricesPage() {
                               <td className="px-4 py-2.5 text-slate-700">{formatDate(record.date)}</td>
                               <td className="px-4 py-2.5 text-emerald-600">{formatCurrency(record.minimum)}</td>
                               <td className="px-4 py-2.5 text-amber-600">{formatCurrency(record.maximum)}</td>
-                              <td className="px-4 py-2.5 font-medium text-slate-900">{formatCurrency(record.average)}</td>
+                              <td className="px-4 py-2.5 font-medium text-green-800">{formatCurrency(record.average)}</td>
                             </tr>
                           ))}
                         </tbody>

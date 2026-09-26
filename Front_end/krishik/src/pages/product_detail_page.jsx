@@ -6,11 +6,12 @@ import { formatPrice, getSellerId, getSellerName } from "../utils/helpers";
 import QuantitySelector from "../components/ui/QuantitySelector";
 import Button from "../components/ui/Button";
 import ProductSkeleton from "../components/ui/ProductSkeleton";
-import { MapPin, ArrowLeft, ShoppingCart, Zap } from "lucide-react";
+import TrustBadge from "../components/ui/TrustBadge";
+import { MapPin, ArrowLeft, ShoppingCart } from "lucide-react"; // Removed unused 'Star'
 
 const ProductDetailPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Kept in case you plan to use it (e.g., redirecting after cart add)
   const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,7 +27,7 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="mx-auto px-4 py-10">
+      <div className="mx-auto px-4 py-10 bg-background min-h-screen">
         <ProductSkeleton />
       </div>
     );
@@ -34,9 +35,9 @@ const ProductDetailPage = () => {
 
   if (!product) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-16 text-center">
-        <p className="text-stone-500">Product not found.</p>
-        <Link to="/products" className="mt-4 inline-block text-emerald-700 hover:underline">
+      <div className="mx-auto max-w-lg px-4 py-16 text-center bg-background min-h-screen">
+        <p className="text-muted-foreground">Product not found.</p>
+        <Link to="/products" className="mt-4 inline-block text-primary hover:underline font-medium">
           Back to marketplace
         </Link>
       </div>
@@ -46,76 +47,76 @@ const ProductDetailPage = () => {
   const stock = Number(product.stock || 0);
   const isInStock = stock > 0;
   const sellerId = getSellerId(product.seller_id);
-  const sellerName = getSellerName(product.seller_id);
+  const sellerName = getSellerName(product.seller_id); // Currently unused in the UI, but kept for context
   const unit = product.unit || "kg";
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
   };
 
-  const handleBuyNow = () => {
-    if (addToCart(product, quantity)) {
-      navigate("/checkout");
-    }
-  };
-
   return (
-    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8 bg-background min-h-screen">
       <Link
         to="/products"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-stone-500 hover:text-emerald-800"
+        className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to marketplace
+        Back
       </Link>
 
-      <div className="grid gap-10 lg:grid-cols-2">
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-100/50">
+      <div className="grid gap-12 lg:grid-cols-2 lg:items-start max-w-6xl mx-auto">
+        {/* Product Image Section */}
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-muted/30 shadow-sm group">
           <img
             src={product.image_url}
             alt={product.name}
-            className="aspect-square w-full object-cover"
+            className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          <div className="absolute left-4 top-4">
+            <TrustBadge type={product?.is_organic ? "organic" : "verified"} />
+          </div>
         </div>
 
-        <div>
-          <span className="rounded-md bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-            {product.category}
-          </span>
-          <h1 className="mt-3 font-serif text-3xl font-bold text-stone-900 sm:text-4xl">
+        {/* Product Info Section */}
+        <div className="flex flex-col">
+          <h1 className="font-display text-4xl font-bold text-foreground sm:text-5xl leading-tight">
             {product.name}
           </h1>
 
           {sellerId && (
-            <Link
-              to={`/farmers/${sellerId}`}
-              className="mt-2 inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-emerald-700"
-            >
+            <div className="mt-3 flex items-center gap-1.5 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
-              {sellerName}
-              {product.seller_id?.location && ` · ${product.seller_id.location}`}
-            </Link>
+              <span className="font-medium">{product.seller_id?.location || "Local Farm"}</span>
+            </div>
           )}
 
-          <p className="mt-6 text-stone-500 leading-relaxed">{product.description}</p>
+          {/* FIXED: Removed the premature closing </div> here so the content below stays inside the right column */}
 
-          <div className="mt-6 flex items-baseline gap-2">
-            <span className="font-serif text-3xl font-bold text-stone-900">
-              {formatPrice(product.price)}
-            </span>
-            <span className="text-stone-500">/ {unit}</span>
+          <div className="mt-8 mb-8 py-6 border-y border-border">
+            <div className="flex items-baseline gap-2">
+              <span className="font-display text-5xl font-black text-primary">
+                {formatPrice(product.price)}
+              </span>
+              <span className="text-muted-foreground font-medium text-lg">per {unit}</span>
+            </div>
           </div>
 
-          <p
-            className={`mt-2 text-sm font-medium ${isInStock ? "text-emerald-700" : "text-red-600"}`}
-          >
-            {isInStock ? `${stock} ${unit} available` : "Currently out of stock"}
-          </p>
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-foreground">Description</h3>
+            <p className="text-muted-foreground leading-relaxed font-body text-lg">
+              {product.description}
+            </p>
+          </div>
 
-          {isInStock && (
-            <div className="mt-6 flex flex-wrap items-center gap-4">
-              <div>
-                <p className="mb-2 text-sm font-semibold text-stone-900">Quantity</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <TrustBadge type="verified" />
+            <TrustBadge type={product?.is_organic ? "organic" : "local"} />
+          </div>
+
+          <div className="mt-10 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-bold text-foreground uppercase tracking-wider">Quantity</span>
                 <QuantitySelector
                   value={quantity}
                   min={1}
@@ -123,29 +124,23 @@ const ProductDetailPage = () => {
                   onChange={setQuantity}
                 />
               </div>
+              <div className="text-right mt-6">
+                <p className={`text-sm font-medium ${isInStock ? "text-secondary" : "text-destructive"}`}>
+                  {isInStock ? `${stock} ${unit} available` : "Currently out of stock"}
+                </p>
+              </div>
             </div>
-          )}
 
-          <div className="mt-8 flex flex-wrap gap-3">
             <Button
               onClick={handleAddToCart}
               disabled={!isInStock}
-              variant="secondary"
-              className="flex-1 sm:flex-none"
+              className="w-full py-5 text-lg font-bold rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3"
             >
-              <ShoppingCart className="h-4 w-4" />
+              <ShoppingCart className="h-5 w-5" />
               Add to Cart
             </Button>
-            <Button
-              onClick={handleBuyNow}
-              disabled={!isInStock}
-              className="flex-1 sm:flex-none"
-            >
-              <Zap className="h-4 w-4" />
-              Buy Now
-            </Button>
           </div>
-        </div>
+        </div> 
       </div>
     </div>
   );

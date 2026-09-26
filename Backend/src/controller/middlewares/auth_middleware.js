@@ -1,5 +1,5 @@
 import { verifyToken } from "../../utils/jwt.utils.js";
-import User from "../../models/user_models.js";
+import User from "../../models/user_model.js";
 
 export const authenticate = async (req, res, next) => {
   try {

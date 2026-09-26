@@ -2,6 +2,7 @@ import Order from "../models/order_model.js";
 import krishik_Product from "../models/product_model.js";
 import { calculateOrderTotals } from "../utils/fees.utils.js";
 import { sendOrderConfirmationEmails } from "../services/orderEmail.service.js";
+import mongoose from "mongoose";
 
 export const createOrder = async (req, res) => {
   try {
@@ -108,6 +109,122 @@ export const getOrderById = async (req, res) => {
     res.json(order);
   } catch (error) {
     console.error("Error fetching order:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// --- Seller Dashboard Endpoints ---
+
+export const getSellerStats = async (req, res) => {
+  try {
+    const sellerId = req.user.id;
+
+    // Aggregate total earnings and order count from orders containing seller's products
+    const stats = await Order.aggregate([
+      { $unwind: "$items" },
+      { $match: { "items.seller_id": new mongoose.Types.ObjectId(sellerId), payment_status: "paid" } },
+      {
+        $group: {
+          _id: null,
+          totalEarnings: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+          totalOrders: { $addToSet: "$_id" },
+        },
+      },
+    ]);
+
+    const totalEarnings = stats[0]?.totalEarnings || 0;
+    const totalOrders = stats[0]?.totalOrders?.length || 0;
+
+    // Count active products
+    const activeProducts = await krishik_Product.countDocuments({ seller_id: sellerId, stock: { $gt: 0 } });
+
+    // Mock rating as review system is not fully implemented
+    const rating = 4.7;
+
+    res.json({
+      totalEarnings,
+      totalOrders,
+      activeProducts,
+      rating,
+    });
+  } catch (error) {
+    console.error("Error fetching seller stats:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getSellerSalesAnalytics = async (req, res) => {
+  try {
+    const sellerId = req.user.id;
+    const currentYear = new Date().getFullYear();
+
+    const salesData = await Order.aggregate([
+      { $unwind: "$items" },
+      {
+        $match: {
+          "items.seller_id": new mongoose.Types.ObjectId(sellerId),
+          payment_status: "paid",
+          createdAt: {
+            $gte: new Date(`${currentYear}-01-01`),
+            $lt: new Date(`${currentYear + 1}-01-01`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          monthlyTotal: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+        },
+      },
+      { $sort: { "_id": 1 } },
+    ]);
+
+    // Ensure all months are present
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const result = months.map((month, index) => {
+      const monthData = salesData.find(d => d._id === index + 1);
+      return {
+        month,
+        amount: monthData ? monthData.monthlyTotal : 0
+      };
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("Error fetching sales analytics:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getSellerOrders = async (req, res) => {
+  try {
+    const sellerId = req.user.id;
+
+    // Find orders that contain at least one product from this seller
+    const orders = await Order.find({ "items.seller_id": sellerId })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate("buyer_id", "first_name last_name")
+      .populate("items.product_id", "name image_url");
+
+    // Format the orders to only show the items belonging to this seller
+    const formattedOrders = orders.map(order => {
+      const sellerItems = order.items.filter(item => String(item.seller_id) === String(sellerId));
+      const sellerSubtotal = sellerItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+      return {
+        _id: order._id,
+        orderId: `ORD-${order._id.toString().slice(-4).toUpperCase()}`,
+        customerName: `${order.buyer_id?.first_name} ${order.buyer_id?.last_name}`,
+        date: order.createdAt,
+        amount: sellerSubtotal,
+        status: order.status,
+      };
+    });
+
+    res.json(formattedOrders);
+  } catch (error) {
+    console.error("Error fetching seller orders:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

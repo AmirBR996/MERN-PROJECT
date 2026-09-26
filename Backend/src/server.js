@@ -9,16 +9,15 @@ import productRoutes from "./routes/product_routes.js";
 import orderRoutes from "./routes/order_routes.js";
 import vegetableRoutes from "./routes/vegetable_routes.js";
 import { startVegetableSyncCron } from "./services/sync.service.js";
+import { errorHandler } from "./controller/middlewares/errorhandler.middleware.js";
 
 
 const app = express();
 
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://krishik-bazar.vercel.app",
-  "https://krishik-bazar-3sv7y4p72-amirbr996s-projects.vercel.app",
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["http://localhost:5173"];
 
 app.use(
   cors({
@@ -41,6 +40,8 @@ app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/", vegetableRoutes);
+
+app.use(errorHandler);
 
 const server = http.createServer(app);
 

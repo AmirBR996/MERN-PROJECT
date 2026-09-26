@@ -14,3 +14,19 @@ export const getOrderById = async (id) => {
   const response = await API.get(`/orders/${id}`);
   return response.data;
 };
+
+// Seller Dashboard APIs
+export const getSellerStats = async () => {
+  const response = await API.get("/orders/seller/stats");
+  return response.data;
+};
+
+export const getSellerSalesAnalytics = async () => {
+  const response = await API.get("/orders/seller/analytics");
+  return response.data;
+};
+
+export const getSellerOrders = async () => {
+  const response = await API.get("/orders/seller/orders");
+  return response.data;
+};

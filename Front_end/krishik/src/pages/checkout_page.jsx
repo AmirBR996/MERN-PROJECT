@@ -1,13 +1,13 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
-import { AuthContext } from "../components/footer./authcontext.jsx";
+import { AuthContext } from "../components/footer/authcontext.jsx";
 import OrderSummary from "../components/order/OrderSummary";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { DELIVERY_FEE } from "../utils/helpers";
 import toast from "react-hot-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -58,22 +58,28 @@ const CheckoutPage = () => {
 
   if (items.length === 0) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-800" />
+      <div className="flex min-h-[40vh] items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="font-serif text-3xl font-bold text-stone-900">Checkout</h1>
-      <p className="mt-1 text-stone-500">Where should we deliver your order?</p>
+    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8 bg-background min-h-screen">
+      <div className="mb-8">
+        <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>
+        <p className="mt-1 text-muted-foreground font-body">Where should we deliver your order?</p>
+      </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
-        <form onSubmit={handleSubmit} className="space-y-4 lg:col-span-2">
-          <div className="rounded-xl border border-stone-200 bg-white p-6">
-            <h2 className="font-serif text-lg font-bold text-stone-900">Delivery Address</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <form onSubmit={handleSubmit} className="space-y-6 lg:col-span-2">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-6">
+              <MapPin className="h-5 w-5 text-primary" />
+              <h2 className="font-display text-lg font-bold text-foreground">Delivery Address</h2>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <Input
                   label="Full Name"
@@ -139,18 +145,22 @@ const CheckoutPage = () => {
               </div>
             </div>
           </div>
-          <Button type="submit" className="w-full sm:w-auto">
-            Continue to Payment
-          </Button>
+          <div className="flex justify-end">
+            <Button type="submit" className="w-full sm:w-auto px-8 py-4 rounded-xl shadow-md">
+              Continue to Payment
+            </Button>
+          </div>
         </form>
 
-        <OrderSummary
-          items={items}
-          subtotal={subtotal}
-          deliveryFee={DELIVERY_FEE}
-          showGrouped
-          groupedBySeller={groupedBySeller}
-        />
+        <div className="lg:sticky lg:top-24 h-fit">
+          <OrderSummary
+            items={items}
+            subtotal={subtotal}
+            deliveryFee={DELIVERY_FEE}
+            showGrouped
+            groupedBySeller={groupedBySeller}
+          />
+        </div>
       </div>
     </div>
   );

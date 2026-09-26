@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../footer./authcontext";
+import { AuthContext } from "../footer/authcontext.jsx";
 import { useNavigate } from "react-router-dom";
 import { X, LogOut, Pencil, MapPin, Mail } from "lucide-react";
 

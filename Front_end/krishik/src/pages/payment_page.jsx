@@ -92,8 +92,8 @@ const PaymentPage = () => {
 
   if (!ready || !checkoutData) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-800" />
+      <div className="flex min-h-[40vh] items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -102,16 +102,18 @@ const PaymentPage = () => {
   const isOnlinePayment = selectedMethod?.paidOnSubmit;
 
   return (
-    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="font-display text-3xl font-bold text-bark">Payment</h1>
-      <p className="mt-1 text-mist">Choose how you&apos;d like to pay</p>
+    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8 bg-background min-h-screen">
+      <div className="mb-8">
+        <h1 className="font-display text-3xl font-bold text-foreground">Payment</h1>
+        <p className="mt-1 text-muted-foreground font-body">Choose how you&apos;d like to pay</p>
+      </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
-          <div className="rounded-2xl border border-soil-200 bg-white p-6">
-            <h2 className="font-display text-lg font-bold text-bark">Payment Method</h2>
+        <div className="space-y-6 lg:col-span-2">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="font-display text-lg font-bold text-foreground mb-6">Payment Method</h2>
 
-            <div className="mt-4 space-y-3">
+            <div className="space-y-3">
               {Object.values(PAYMENT_METHODS).map((option) => {
                 const Icon = METHOD_ICONS[option.id];
                 const isSelected = method === option.id;
@@ -119,10 +121,10 @@ const PaymentPage = () => {
                 return (
                   <label
                     key={option.id}
-                    className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition ${
+                    className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition-all duration-200 ${
                       isSelected
-                        ? "border-leaf-500 bg-leaf-50"
-                        : "border-soil-200 hover:border-soil-300"
+                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        : "border-border hover:border-primary/50 bg-background"
                     }`}
                   >
                     <input
@@ -131,12 +133,12 @@ const PaymentPage = () => {
                       value={option.id}
                       checked={isSelected}
                       onChange={() => setMethod(option.id)}
-                      className="accent-leaf-600"
+                      className="accent-primary w-4 h-4"
                     />
                     <Icon className="h-6 w-6 shrink-0" style={{ color: option.color }} />
-                    <div>
-                      <p className="font-semibold text-bark">{option.label}</p>
-                      <p className="text-sm text-mist">{option.description}</p>
+                    <div className="flex flex-col">
+                      <p className="font-semibold text-foreground">{option.label}</p>
+                      <p className="text-sm text-muted-foreground">{option.description}</p>
                     </div>
                   </label>
                 );
@@ -144,37 +146,41 @@ const PaymentPage = () => {
             </div>
 
             {isOnlinePayment && (
-              <div className="mt-4 rounded-xl bg-harvest-50 p-4 text-sm text-harvest-800">
-                <strong>Sandbox mode:</strong> This simulates a {selectedMethod.label} payment.
+              <div className="mt-6 rounded-xl bg-secondary/10 p-4 text-sm text-secondary-foreground border border-secondary/20">
+                <strong className="font-medium">Sandbox mode:</strong> This simulates a {selectedMethod.label} payment.
                 Wire up real credentials in{" "}
-                <code className="rounded bg-white px-1">src/services/payment.service.js</code> when
+                <code className="rounded bg-white px-1 border border-border">src/services/payment.service.js</code> when
                 ready.
               </div>
             )}
           </div>
 
-          <Button onClick={handlePay} disabled={loading} className="w-full sm:w-auto">
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : isOnlinePayment ? (
-              `Pay ${selectedMethod.label}`
-            ) : (
-              "Place Order"
-            )}
-          </Button>
+          <div className="flex justify-end">
+            <Button onClick={handlePay} disabled={loading} className="w-full sm:w-auto px-10 py-4 rounded-xl shadow-md">
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : isOnlinePayment ? (
+                `Pay with ${selectedMethod.label}`
+              ) : (
+                "Place Order"
+              )}
+            </Button>
+          </div>
         </div>
 
-        <OrderSummary
-          items={items}
-          subtotal={subtotal}
-          deliveryFee={DELIVERY_FEE}
-          platformFee={platformFee}
-          showGrouped
-          groupedBySeller={groupedBySeller}
-        />
+        <div className="lg:sticky lg:top-24 h-fit">
+          <OrderSummary
+            items={items}
+            subtotal={subtotal}
+            deliveryFee={DELIVERY_FEE}
+            platformFee={platformFee}
+            showGrouped
+            groupedBySeller={groupedBySeller}
+          />
+        </div>
       </div>
     </div>
   );

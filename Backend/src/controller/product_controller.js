@@ -78,7 +78,12 @@ export const updateProduct = async (req, res) => {
             return res.status(403).json({ message: "You can only update your own products" });
         }
 
-        const updatedProduct = await krishik_Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const updateData = {
+            ...req.body,
+            image_url: req.file ? req.file.path : product.image_url,
+        };
+
+        const updatedProduct = await krishik_Product.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
         res.json(updatedProduct);
     } catch (error) {
         console.error("Error updating product:", error);
@@ -91,10 +96,13 @@ export const createProduct = async (req, res) => {
             return res.status(403).json({ message: "Only sellers can create products" });
         }
 
-        const newProduct = new krishik_Product({
+        const productData = {
             ...req.body,
+            image_url: req.file ? req.file.path : req.body.image_url,
             seller_id: req.user.id,
-        });
+        };
+
+        const newProduct = new krishik_Product(productData);
 
         const savedProduct = await newProduct.save();
         res.status(201).json(savedProduct);

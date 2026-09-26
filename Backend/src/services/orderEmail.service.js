@@ -1,4 +1,4 @@
-import krishik_User from "../models/user_models.js";
+import User from "../models/user_model.js";
 import { sendBuyerOrderEmail, sendSellerOrderEmail } from "./email.service.js";
 
 export const sendOrderConfirmationEmails = async (order) => {

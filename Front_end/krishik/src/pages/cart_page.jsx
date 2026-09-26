@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useCart } from "../contexts/CartContext";
-import { AuthContext } from "../components/footer./authcontext.jsx";
+import { AuthContext } from "../components/footer/authcontext.jsx";
 import CartItem from "../components/cart/CartItem";
 import OrderSummary from "../components/order/OrderSummary";
 import EmptyState from "../components/ui/EmptyState";
@@ -15,7 +15,15 @@ const CartPage = () => {
   const { user } = useContext(AuthContext);
   const { items, subtotal, updateQuantity, removeFromCart } = useCart();
 
+  useEffect(() => {
+    if (!user) {
+      toast.error("Please sign in to view your cart");
+      navigate("/login", { state: { from: "/cart" } });
+    }
+  }, [user, navigate]);
+
   const handleCheckout = () => {
+
     if (!user) {
       toast.error("Please sign in to checkout");
       navigate("/login", { state: { from: "/checkout" } });
@@ -33,7 +41,7 @@ const CartPage = () => {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
+      <div className="mx-auto max-w-3xl px-4 py-16 bg-background min-h-screen">
         <EmptyState
           title="Your cart is empty"
           description="Browse the marketplace and add fresh produce from local farmers."
@@ -46,9 +54,9 @@ const CartPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="font-serif text-3xl font-bold text-stone-900">Your Cart</h1>
-      <p className="mt-1 text-stone-500">
+    <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8 bg-background min-h-screen">
+      <h1 className="font-display text-3xl font-bold text-foreground">Your Cart</h1>
+      <p className="mt-1 text-muted-foreground">
         {items.length} item{items.length !== 1 ? "s" : ""} from local farmers
       </p>
 

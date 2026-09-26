@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AlertCircle, ArrowRight, Package, Plus, RefreshCw, Sprout, TrendingUp } from "lucide-react";
-import { AuthContext } from "../components/footer./authcontext.jsx";
+import { AlertCircle, ArrowRight, Package, Plus, RefreshCw, Sprout, TrendingUp, X, Upload } from "lucide-react";
+import { AuthContext } from "../components/footer/authcontext.jsx";
 import ProductCard from "../components/cards/product_card.jsx";
 import { createProduct, deleteProduct, getMyProducts, updateProduct } from "../api/product.api.js";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
 const initialForm = {
   name: "",
   description: "",
   price: "",
   category: "Vegetables",
-  image_url: "",
   stock: "",
 };
 
@@ -29,6 +30,10 @@ export const Add_product = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info");
   const [form, setForm] = useState(initialForm);
+
+  // Image upload state
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const loadProducts = async () => {
     if (!sellerId || !isSeller) {
@@ -75,9 +80,28 @@ export const Add_product = () => {
     setForm((current) => ({ ...current, [name]: value }));
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const clearForm = () => {
     setForm(initialForm);
     setEditingProductId(null);
+    setImageFile(null);
+    setImagePreview(null);
     setMessage("");
   };
 
@@ -88,9 +112,10 @@ export const Add_product = () => {
       description: product.description || "",
       price: product.price !== undefined ? String(product.price) : "",
       category: product.category || "Vegetables",
-      image_url: product.image_url || "",
       stock: product.stock !== undefined ? String(product.stock) : "",
     });
+    setImagePreview(product.image_url);
+    setImageFile(null); // New file must be uploaded to change image
     setMessage("Editing product. Update the fields below and save.");
     setMessageType("info");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -130,29 +155,34 @@ export const Add_product = () => {
       return;
     }
 
-    if (!form.name || !form.description || !form.price || !form.image_url) {
-      setMessage("Fill in all required product details.");
+    if (!form.name || !form.description || !form.price || (!imageFile && !imagePreview)) {
+      setMessage("Fill in all required product details and upload a photo.");
       setMessageType("error");
       return;
     }
 
-    const payload = {
-      ...form,
-      price: Number(form.price),
-      stock: Number(form.stock || 0),
-      seller_id: sellerId,
-    };
+    const formData = new FormData();
+    formData.append("name", form.name);
+    formData.append("description", form.description);
+    formData.append("price", form.price);
+    formData.append("category", form.category);
+    formData.append("stock", form.stock || 0);
+    formData.append("seller_id", sellerId);
+
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
 
     try {
       setSaving(true);
       setMessage("");
 
       if (editingProductId) {
-        const updated = await updateProduct(editingProductId, payload);
+        const updated = await updateProduct(editingProductId, formData);
         setProducts((current) => current.map((product) => (product._id === editingProductId ? updated : product)));
         setMessage("Product updated successfully.");
       } else {
-        const created = await createProduct(payload);
+        const created = await createProduct(formData);
         setProducts((current) => [created, ...current]);
         setMessage("Product added successfully.");
       }
@@ -173,7 +203,7 @@ export const Add_product = () => {
         <div className="mx-auto max-w-2xl rounded-xl border border-stone-200 bg-white/90 p-8 text-center shadow-sm backdrop-blur">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-md bg-emerald-50 text-emerald-800">
             <AlertCircle className="h-8 w-8" />
-          </div>
+          </div >
           <h1 className="font-serif text-3xl font-bold text-stone-900">Login required</h1>
           <p className="mt-4 text-base leading-7 text-stone-500">
             Please sign in to manage products from your farmer dashboard.
@@ -186,8 +216,8 @@ export const Add_product = () => {
             <Link to="/" className="inline-flex items-center gap-2 rounded-md border border-stone-200 px-6 py-3 text-sm font-semibold text-stone-900 transition hover:border-emerald-600 hover:text-emerald-800">
               Back to home
             </Link>
-          </div>
-        </div>
+          </div >
+        </div >
       </main>
     );
   }
@@ -198,7 +228,7 @@ export const Add_product = () => {
         <div className="mx-auto max-w-2xl rounded-xl border border-stone-200 bg-white/90 p-8 text-center shadow-sm backdrop-blur">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-md bg-orange-50 text-orange-700">
             <Sprout className="h-8 w-8" />
-          </div>
+          </div >
           <h1 className="font-serif text-3xl font-bold text-stone-900">Seller access only</h1>
           <p className="mt-4 text-base leading-7 text-stone-500">
             This dashboard is available for farmers and sellers who manage product listings.
@@ -211,8 +241,8 @@ export const Add_product = () => {
             <Link to="/" className="inline-flex items-center gap-2 rounded-md border border-stone-200 px-6 py-3 text-sm font-semibold text-stone-900 transition hover:border-emerald-600 hover:text-emerald-800">
               Back to home
             </Link>
-          </div>
-        </div>
+          </div >
+        </div >
       </main>
     );
   }
@@ -222,7 +252,7 @@ export const Add_product = () => {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -left-16 top-0 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl" />
         <div className="absolute right-0 top-24 h-80 w-80 rounded-full bg-orange-200/30 blur-3xl" />
-      </div>
+      </div >
 
       <div className="relative mx-auto space-y-8">
         <section className="overflow-hidden rounded-xl border border-stone-200 bg-white/90 p-6 shadow-sm backdrop-blur sm:p-8 lg:p-10">
@@ -231,24 +261,24 @@ export const Add_product = () => {
               <div className="inline-flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800">
                 <Package className="h-4 w-4" />
                 Farmer product manager
-              </div>
+              </div >
               <h1 className="font-serif text-3xl font-bold text-stone-900 sm:text-4xl">
                 Manage your harvest listings in one place
               </h1>
               <p className="text-base leading-7 text-stone-500">
                 Add new produce, keep stock levels current, and see how your inventory is performing at a glance.
               </p>
-            </div>
+            </div >
 
             <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
+              <Button
+                variant="outline"
                 onClick={loadProducts}
-                className="inline-flex items-center gap-2 rounded-md border border-stone-200 px-5 py-3 text-sm font-semibold text-stone-900 transition hover:border-emerald-600 hover:text-emerald-800"
+                className="gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
                 Refresh
-              </button>
+              </Button>
               <Link
                 to="/products"
                 className="inline-flex items-center gap-2 rounded-2xl bg-leaf-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-leaf-700"
@@ -256,17 +286,17 @@ export const Add_product = () => {
                 View marketplace
                 <ArrowRight className="h-4 w-4" />
               </Link>
-            </div>
-          </div>
+            </div >
+          </div >
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {summary.map((item) => (
               <div key={item.label} className="rounded-md border border-stone-200 bg-stone-100/50 p-5">
                 <p className="text-sm font-medium text-stone-500">{item.label}</p>
                 <p className="mt-2 font-serif text-2xl font-bold text-stone-900">{item.value}</p>
-              </div>
+              </div >
             ))}
-          </div>
+          </div >
 
           {message ? (
             <div
@@ -279,49 +309,61 @@ export const Add_product = () => {
               }`}
             >
               {message}
-            </div>
+            </div >
           ) : null}
         </section>
 
         <section className="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
           <div className="rounded-xl border border-stone-200 bg-white/90 p-6 shadow-sm backdrop-blur sm:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
-              <div>
+              <div >
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-800">
                   {editingProductId ? "Edit product" : "Add product"}
                 </p>
                 <h2 className="mt-2 font-serif text-2xl font-bold text-stone-900">
                   {editingProductId ? "Update listing details" : "Create a new listing"}
                 </h2>
-              </div>
+              </div >
               {editingProductId ? (
-                <button
-                  type="button"
-                  onClick={clearForm}
-                  className="rounded-md border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-500 transition hover:border-stone-300 hover:text-stone-900"
-                >
+                <Button variant="outline" onClick={clearForm}>
                   Cancel edit
-                </button>
+                </Button>
               ) : null}
-            </div>
+            </div >
 
             <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field label="Product name" name="name" value={form.name} onChange={handleChange} placeholder="Fresh tomatoes" />
-                <Field label="Price" name="price" value={form.price} onChange={handleChange} placeholder="120" type="number" />
-              </div>
+                <Input
+                  label="Product name"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="Fresh tomatoes"
+                />
+                <Input
+                  label="Price"
+                  name="price"
+                  value={form.price}
+                  onChange={handleChange}
+                  placeholder="120"
+                  type="number"
+                />
+              </div >
 
-              <Field
-                label="Description"
-                name="description"
-                value={form.description}
-                onChange={handleChange}
-                placeholder="Short product story, quality, and harvest notes"
-                textarea
-              />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-stone-900">Description</label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  placeholder="Short product story, quality, and harvest notes"
+                  rows={5}
+                  className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
+                />
+              </div >
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <div>
+                <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-stone-900">Category</label>
                   <select
                     name="category"
@@ -335,65 +377,100 @@ export const Add_product = () => {
                       </option>
                     ))}
                   </select>
-                </div>
-                <Field label="Stock" name="stock" value={form.stock} onChange={handleChange} placeholder="25" type="number" />
-              </div>
+                </div >
+                <Input
+                  label="Stock"
+                  name="stock"
+                  value={form.stock}
+                  onChange={handleChange}
+                  placeholder="25"
+                  type="number"
+                />
+              </div >
 
-              <Field
-                label="Image URL"
-                name="image_url"
-                value={form.image_url}
-                onChange={handleChange}
-                placeholder="https://..."
-              />
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-stone-900">Product Photo</label>
+                <div className="relative group overflow-hidden rounded-xl border-2 border-dashed border-stone-200 bg-stone-50 p-4 transition hover:border-emerald-400">
+                  {imagePreview ? (
+                    <div className="relative h-48 w-full">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="h-full w-full rounded-lg object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute right-2 top-2 rounded-full bg-white/90 p-1 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div >
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <div className="mb-3 rounded-full bg-emerald-100 p-3 text-emerald-600">
+                        <Upload className="h-6 w-6" />
+                      </div >
+                      <p className="text-sm font-medium text-stone-900">Click to upload product photo</p>
+                      <p className="mt-1 text-xs text-stone-500">PNG, JPG or WEBP (max 5MB)</p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="absolute inset-0 cursor-pointer opacity-0"
+                      />
+                    </div >
+                  )}
+                </div >
+              </div >
 
               <div className="flex flex-wrap gap-3 pt-2">
-                <button
+                <Button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-md bg-stone-900 px-6 py-3 text-sm font-semibold text-amber-50 shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
+                  className="gap-2"
                 >
                   <Plus className="h-4 w-4" />
                   {saving ? "Saving..." : editingProductId ? "Save changes" : "Add product"}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={clearForm}
-                  className="rounded-md border border-stone-200 px-6 py-3 text-sm font-semibold text-stone-900 transition hover:border-emerald-600 hover:text-emerald-800"
                 >
                   Clear form
-                </button>
-              </div>
+                </Button>
+              </div >
             </form>
-          </div>
+          </div >
 
           <div className="rounded-xl border border-stone-200 bg-white/90 p-6 shadow-sm backdrop-blur sm:p-8">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
+              <div >
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-800">
                   Your inventory
                 </p>
                 <h2 className="mt-2 font-serif text-2xl font-bold text-stone-900">
                   Products you can edit anytime
                 </h2>
-              </div>
+              </div >
               <div className="inline-flex items-center gap-2 rounded-md bg-stone-100/50 px-4 py-2 text-sm font-semibold text-stone-900">
                 <TrendingUp className="h-4 w-4 text-emerald-800" />
                 {products.length} active listings
-              </div>
-            </div>
+              </div >
+            </div >
 
             {loading ? (
               <div className="rounded-xl border border-dashed border-stone-200 bg-stone-100/50 p-12 text-center text-stone-500">
                 Loading your products...
-              </div>
+              </div >
             ) : products.length === 0 ? (
               <div className="rounded-xl border border-dashed border-stone-200 bg-stone-100/50 p-12 text-center">
                 <h3 className="font-serif text-xl font-bold text-stone-900">No products yet</h3>
                 <p className="mt-3 text-stone-500">
                   Add your first product to start selling on the marketplace.
                 </p>
-              </div>
+              </div >
             ) : (
               <div className="grid gap-6 lg:grid-cols-2">
                 {products.map((product) => (
@@ -404,41 +481,13 @@ export const Add_product = () => {
                     onDelete={handleDelete}
                   />
                 ))}
-              </div>
+              </div >
             )}
-          </div>
+          </div >
         </section>
-      </div>
+      </div >
     </main>
   );
 };
 
-const Field = ({ label, name, value, onChange, placeholder, type = "text", textarea = false }) => {
-  const sharedClasses =
-    "mt-1.5 w-full rounded-md border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200";
-
-  return (
-    <div>
-      <label className="text-sm font-semibold text-stone-900">{label}</label>
-      {textarea ? (
-        <textarea
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          rows={5}
-          className={sharedClasses}
-        />
-      ) : (
-        <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className={sharedClasses}
-        />
-      )}
-    </div>
-  );
-};
+export default Add_product;

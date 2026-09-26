@@ -1,11 +1,12 @@
 import "./App.css";
 import { Home_page } from "./pages/home_page";
+import { CartProvider } from "./contexts/CartContext";
 import LoginPage from "./pages/login_page";
 import RegisterPage from "./pages/register_page";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
 import NavBar from "./components/header";
-import Footer from "./components/footer./footer";
+import Footer from "./components/footer/footer";
 import User_profile from "./components/header/user_profile";
 import ProductPage from "./pages/product_page";
 import ProductDetailPage from "./pages/product_detail_page";
@@ -18,7 +19,8 @@ import OrdersPage from "./pages/orders_page";
 import OrderDetailPage from "./pages/order_detail_page";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Add_product } from "./pages/add_product";
-import VegetablePricesPage from "./pages/vegetable_prices_page.jsx";
+import FarmerDashboard from "./pages/FarmerDashboard";
+import VegetablePricesPage from "./pages/vegetable_prices_page";
 
 function AppContent() {
   const location = useLocation();
@@ -84,17 +86,14 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-  <Route path="/my-products" element={<Add_product />} />
+  <Route path="/my-products" element={<FarmerDashboard />} />
   <Route path="/add-product" element={<Add_product />} />
   <Route path="/vegetables" element={<VegetablePricesPage />} />
+  <Route path="/profile" element={<User_profile />} />
 </Routes>
       </main>
 
       <Footer />
-
-      <Routes>
-        <Route path="/profile" element={<User_profile />} />
-      </Routes>
     </div>
   );
 }
@@ -102,7 +101,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </Router>
   );
 }

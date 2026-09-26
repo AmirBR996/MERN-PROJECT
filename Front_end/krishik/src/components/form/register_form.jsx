@@ -1,22 +1,17 @@
 import React, { useState, useContext } from "react";
-import { sendOtp, verifyOtp } from "../../api/auth.api";
+import { register } from "../../api/auth.api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { AuthContext } from "../footer./authcontext.jsx";
+import { AuthContext } from "../footer/authcontext.jsx";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
 import Button from "../ui/Button";
-import OtpVerification from "./OtpVerification";
+import { User, Mail, Lock, MapPin } from "lucide-react";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
   const { login: loginContext } = useContext(AuthContext);
-  const [step, setStep] = useState("form");
   const [loading, setLoading] = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
-  const [otpError, setOtpError] = useState("");
-  const [devOtp, setDevOtp] = useState("");
-  const [devNotice, setDevNotice] = useState("");
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     first_name: "",
@@ -53,101 +48,22 @@ const RegisterForm = () => {
     if (!validate()) return;
 
     setLoading(true);
-    setOtpError("");
-    setDevOtp("");
-    setDevNotice("");
     try {
-      const response = await sendOtp(formData);
-      if (response.devOtp) {
-        setDevOtp(response.devOtp);
-        setDevNotice(response.devNotice || "");
-        toast.success("Development OTP generated — enter the code shown below");
-      } else {
-        toast.success(response.message || "Verification code sent!");
+      const response = await register(formData);
+      if (response.user && response.access_token) {
+        loginContext(response.user, response.access_token);
       }
-      setStep("otp");
-    } catch (err) {
-      toast.error(err?.response?.data?.message || "Could not send verification code");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerify = async (otp) => {
-    setLoading(true);
-    setOtpError("");
-    try {
-      const response = await verifyOtp({ email: formData.email, otp });
-      loginContext(response.user, response.access_token);
-      toast.success("Account created!");
+      toast.success("Account created successfully!");
       navigate("/", { replace: true });
     } catch (err) {
-      const message = err?.response?.data?.message || "Verification failed";
-      setOtpError(message);
+      toast.error(err?.response?.data?.message || "Could not create account");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleResend = async () => {
-    setResendLoading(true);
-    setOtpError("");
-    try {
-      const response = await sendOtp(formData);
-      if (response.devOtp) {
-        setDevOtp(response.devOtp);
-        setDevNotice(response.devNotice || "");
-      }
-      toast.success(response.message || "New code sent!");
-    } catch (err) {
-      const message = err?.response?.data?.message || "Could not resend code";
-      setOtpError(message);
-      toast.error(message);
-    } finally {
-      setResendLoading(false);
-    }
-  };
-
-  if (step === "otp") {
-    return (
-      <div className="flex flex-col gap-4">
-        <div>
-          <h2 className="font-serif text-xl font-bold text-stone-900">Verify your email</h2>
-          <p className="mt-1 text-sm text-stone-500">Step 2 of 2 — confirm it&apos;s really you</p>
-        </div>
-        <OtpVerification
-          email={formData.email}
-          onVerify={handleVerify}
-          onResend={handleResend}
-          loading={loading}
-          resendLoading={resendLoading}
-          error={otpError}
-        />
-        {devOtp && (
-          <div className="rounded-md border border-orange-200 bg-orange-50 px-4 py-3 text-center">
-            <p className="text-xs font-semibold uppercase tracking-wide text-orange-700">
-              Development mode
-            </p>
-            <p className="mt-1 text-sm text-orange-800">{devNotice}</p>
-            <p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-stone-900">{devOtp}</p>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={() => {
-            setStep("form");
-            setOtpError("");
-          }}
-          className="text-sm text-stone-500 hover:text-stone-900"
-        >
-          ← Back to registration form
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <form className="flex flex-col gap-4" onSubmit={handlesubmit}>
+    <form className="flex flex-col gap-5" onSubmit={handlesubmit}>
       <div className="grid gap-4 sm:grid-cols-2">
         <Input
           label="First Name"
@@ -156,6 +72,7 @@ const RegisterForm = () => {
           placeholder="Ram"
           value={formData.first_name}
           onChange={handlechange}
+          icon={User}
           required
         />
         <Input
@@ -165,6 +82,7 @@ const RegisterForm = () => {
           placeholder="Sharma"
           value={formData.last_name}
           onChange={handlechange}
+          icon={User}
           required
         />
       </div>
@@ -176,6 +94,7 @@ const RegisterForm = () => {
         placeholder="Kathmandu, Nepal"
         value={formData.location}
         onChange={handlechange}
+        icon={MapPin}
         required
       />
 
@@ -187,6 +106,7 @@ const RegisterForm = () => {
         placeholder="you@example.com"
         value={formData.email}
         onChange={handlechange}
+        icon={Mail}
         required
       />
 
@@ -214,6 +134,7 @@ const RegisterForm = () => {
         placeholder="At least 6 characters"
         value={formData.password}
         onChange={handlechange}
+        icon={Lock}
         error={errors.password}
         required
       />
@@ -226,12 +147,13 @@ const RegisterForm = () => {
         placeholder="Re-type password"
         value={formData.c_password}
         onChange={handlechange}
+        icon={Lock}
         error={errors.c_password}
         required
       />
 
-      <Button type="submit" className="w-full mt-2" disabled={loading}>
-        {loading ? "Sending code..." : "Create Account"}
+      <Button type="submit" className="w-full mt-2 py-4 rounded-xl shadow-lg" disabled={loading}>
+        {loading ? "Creating account..." : "Create Account"}
       </Button>
     </form>
   );

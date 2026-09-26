@@ -2,9 +2,10 @@ import React, { useState, useContext } from "react";
 import { login as apiLogin } from "../../api/auth.api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { AuthContext } from "../footer./authcontext.jsx";
+import { AuthContext } from "../footer/authcontext.jsx";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
+import { Mail, Lock } from "lucide-react";
 
 const Login_form = () => {
   const navigate = useNavigate();
@@ -35,29 +36,44 @@ const Login_form = () => {
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handlesubmit}>
-      <Input
-        label="Email"
-        id="email"
-        name="email"
-        type="email"
-        placeholder="you@example.com"
-        value={formData.email}
-        onChange={handlechange}
-        required
-      />
-      <Input
-        label="Password"
-        id="password"
-        name="password"
-        type="password"
-        placeholder="Enter your password"
-        value={formData.password}
-        onChange={handlechange}
-        required
-      />
-      <Button type="submit" className="w-full mt-2" disabled={loading}>
-        {loading ? "Signing in..." : "Sign In"}
+    <form className="flex flex-col gap-6" onSubmit={handlesubmit}>
+      <div className="space-y-4">
+        <Input
+          label="Email"
+          id="email"
+          name="email"
+          type="email"
+          placeholder="you@example.com"
+          value={formData.email}
+          onChange={handlechange}
+          icon={Mail}
+          required
+        />
+        <Input
+          label="Password"
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Enter your password"
+          value={formData.password}
+          onChange={handlechange}
+          icon={Lock}
+          required
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+          <input type="checkbox" className="rounded border-border accent-primary" />
+          Remember me
+        </label>
+        <button type="button" className="text-sm font-medium text-primary hover:underline">
+          Forgot password?
+        </button>
+      </div>
+
+      <Button type="submit" className="w-full py-4 rounded-xl shadow-lg" disabled={loading}>
+        {loading ? "Signing in..." : "Login"}
       </Button>
     </form>
   );

@@ -1,17 +1,26 @@
-const Input = ({ label, error, id, className = "", ...props }) => {
+const Input = ({ label, error, id, icon: Icon, className = "", ...props }) => {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-sm font-semibold text-stone-900">
+        <label htmlFor={id} className="text-sm font-semibold text-foreground">
           {label}
         </label>
       )}
-      <input
-        id={id}
-        className={`rounded-md border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200 ${error ? "border-red-400 focus:ring-red-100" : ""} ${className}`}
-        {...props}
-      />
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      <div className="relative">
+        {Icon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+            <Icon className="h-4 w-4" />
+          </div>
+        )}
+        <input
+          id={id}
+          className={`w-full rounded-lg border border-border bg-input-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+            Icon ? "pl-10" : ""
+          } ${error ? "border-destructive focus:ring-destructive/20" : ""} ${className}`}
+          {...props}
+        />
+      </div>
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 };

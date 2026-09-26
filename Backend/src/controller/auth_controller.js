@@ -1,5 +1,5 @@
 import { hashPassword, comparePassword } from "../utils/bcrypt.utils.js";
-import krishik_User from "../models/user_models.js";
+import User from "../models/user_model.js";
 import OtpVerification from "../models/otp_verification_model.js";
 import { generateToken } from "../utils/jwt.utils.js";
 import { sendOtpEmail } from "../services/email.service.js";
@@ -38,7 +38,7 @@ export const sendOtp = async (req, res) => {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    const existingUser = await krishik_User.findOne({ email: normalizedEmail });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(409).json({ message: "User already exists with this email" });
     }
@@ -157,13 +157,13 @@ export const verifyOtp = async (req, res) => {
       });
     }
 
-    const existingUser = await krishik_User.findOne({ email: normalizedEmail });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       await OtpVerification.deleteOne({ email: normalizedEmail });
       return res.status(409).json({ message: "User already exists with this email" });
     }
 
-    const user = await krishik_User.create({
+    const user = await User.create({
       ...record.registrationData,
       email: normalizedEmail,
     });
@@ -191,39 +191,61 @@ export const register = async (req, res) => {
   try {
     const { first_name, last_name, email, password, location, user_type } = req.body;
 
-    if (!first_name || !last_name || !email || !password || !location) {
-      return res.status(400).json({
-        message: "All fields are required"
-      });
+    if (!first_name || !last_name || !email || !password || !location || !user_type) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    const existingUser = await krishik_User.findOne({ email });
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
-      return res.status(409).json({
-        message: "User already exists with this email"
-      });
+      return res.status(409).json({ message: "User already exists with this email" });
     }
 
     const hashedPassword = await hashPassword(password);
-
-    await krishik_User.create({
+    const user = await User.create({
       first_name,
       last_name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       location,
-      user_type
+      user_type: normalizeUserType(user_type),
+    });
+
+    const access_token = generateToken({
+      id: user._id,
+      email: user.email,
+      user_type: user.user_type,
     });
 
     res.status(201).json({
-      message: "Account created successfully"
+      message: "Account created successfully",
+      access_token,
+      user: formatUserResponse(user),
     });
-
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: error.message || "Something went wrong"
+    console.error("register error:", error);
+    res.status(500).json({ message: error.message || "Failed to register user" });
+  }
+};
+
+
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({
+      success: true,
+      user: formatUserResponse(user),
     });
+  } catch (error) {
+    console.error("getProfile error:", error);
+    res.status(500).json({ message: error.message || "Failed to fetch profile" });
   }
 };
 
@@ -237,7 +259,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const user = await krishik_User.findOne({ email });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
         message: "Invalid email or password"

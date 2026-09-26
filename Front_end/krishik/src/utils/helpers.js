@@ -6,13 +6,13 @@ export const formatPrice = (amount) => {
 };
 
 export const CATEGORIES = [
-  "All",
-  "Vegetables",
-  "Fruits",
-  "Grains",
-  "Dairy",
-  "Meat",
-  "Other",
+  { id: "All", label: "All", icon: "✨" },
+  { id: "Vegetables", label: "Vegetables", icon: "🥦" },
+  { id: "Fruits", label: "Fruits", icon: "🍎" },
+  { id: "Grains", label: "Grains", icon: "🌾" },
+  { id: "Dairy", label: "Dairy", icon: "🥛" },
+  { id: "Meat", label: "Meat", icon: "🥩" },
+  { id: "Other", label: "Other", icon: "📦" },
 ];
 
 export const SORT_OPTIONS = [

@@ -9,20 +9,18 @@ const Button = ({
 }) => {
   const variants = {
     primary:
-      "bg-stone-900 text-amber-50 hover:bg-emerald-800 shadow-sm",
+      "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
     secondary:
-      "bg-stone-100 text-stone-900 hover:bg-stone-200 border border-stone-200",
+      "bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm",
     outline:
-      "border-2 border-emerald-700 text-emerald-800 hover:bg-emerald-50",
-    harvest:
-      "bg-orange-600 text-white hover:bg-orange-700 shadow-sm",
-    ghost: "text-stone-500 hover:text-stone-900 hover:bg-stone-100",
-    danger: "bg-red-600 text-white hover:bg-red-700",
+      "border-2 border-primary text-primary hover:bg-primary/5",
+    ghost: "text-muted-foreground hover:text-foreground hover:bg-muted",
+    danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
   };
 
   return (
     <Component
-      className={`inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${variants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${variants[variant] || variants.primary} ${className}`}
       {...props}
     >
       {children}

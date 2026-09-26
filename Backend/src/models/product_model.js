@@ -24,7 +24,11 @@ const productSchema = new mongoose.Schema(
     image_url: {
       type: String,
       required: [true, "Product image URL is required"]
-    }, 
+    },
+    location: {
+      type: String,
+      required: [true, "Product location is required"]
+    },
     stock: {
       type: Number,
       default: 0,
