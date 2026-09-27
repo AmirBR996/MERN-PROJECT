@@ -96,9 +96,14 @@ export const createProduct = async (req, res) => {
             return res.status(403).json({ message: "Only sellers can create products" });
         }
 
+        console.log("--- Create Product Request ---");
+        console.log("Body:", req.body);
+        console.log("File:", req.file);
+
         const productData = {
             ...req.body,
-            image_url: req.file ? req.file.path : req.body.image_url,
+            image_url: req.file ? req.file.path : (req.body.image_url || "https://via.placeholder.com/300"),
+            location: req.body.location || "Unknown Location",
             seller_id: req.user.id,
         };
 
@@ -108,6 +113,6 @@ export const createProduct = async (req, res) => {
         res.status(201).json(savedProduct);
     } catch (error) {
         console.error("Error creating product:", error);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: error.message || "Server error" });
     }
 };

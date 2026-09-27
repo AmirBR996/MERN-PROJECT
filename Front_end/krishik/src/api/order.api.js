@@ -15,6 +15,11 @@ export const getOrderById = async (id) => {
   return response.data;
 };
 
+export const cancelOrder = async (id) => {
+  const response = await API.patch(`/orders/${id}/cancel`);
+  return response.data;
+};
+
 // Seller Dashboard APIs
 export const getSellerStats = async () => {
   const response = await API.get("/orders/seller/stats");

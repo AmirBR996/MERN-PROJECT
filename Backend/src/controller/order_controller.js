@@ -228,3 +228,39 @@ export const getSellerOrders = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const cancelOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Only the buyer can cancel their own order
+    if (String(order.buyer_id) !== String(req.user.id)) {
+      return res.status(403).json({ message: "You are not authorized to cancel this order" });
+    }
+
+    // Only pending or confirmed orders can be cancelled
+    if (order.status !== "pending" && order.status !== "confirmed") {
+      return res.status(400).json({ message: `Orders with status '${order.status}' cannot be cancelled` });
+    }
+
+    // Restore product stock
+    for (const item of order.items) {
+      await krishik_Product.findByIdAndUpdate(item.product_id, {
+        $inc: { stock: item.quantity },
+      });
+    }
+
+    order.status = "cancelled";
+    await order.save();
+
+    res.json({ message: "Order cancelled successfully", order });
+  } catch (error) {
+    console.error("Error cancelling order:", error);
+    res.status(500).json({ message: error.message || "Server error" });
+  }
+};

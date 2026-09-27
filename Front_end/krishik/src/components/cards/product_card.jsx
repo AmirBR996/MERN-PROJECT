@@ -28,9 +28,12 @@ const ProductCard = ({ product, onDelete, onEdit, showActions = true }) => {
       <article className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
         <Link to={`/products/${product._id}`} className="relative block aspect-[4/3] overflow-hidden bg-muted/50">
           <img
-            src={product?.image_url}
+            src={product?.image_url || "https://via.placeholder.com/300"}
             alt={product?.name || "Product"}
             className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+            onError={(e) => {
+              e.target.src = "https://via.placeholder.com/300";
+            }}
           />
           <div className="absolute left-3 top-3 flex flex-col gap-2">
             <TrustBadge type={product?.is_organic ? "organic" : "verified"} />

@@ -243,25 +243,6 @@ export function Home_page({ searchQuery = "" }) {
       </section>
 
       {/* CTA Section */}
-      <section className="w-full bg-[#1B5E20] py-20 lg:py-24 text-white text-center">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-3xl font-bold sm:text-4xl">
-              Ready to Start Your Journey?
-            </h2>
-            <p className="text-lg text-green-100 max-w-2xl mx-auto">
-              Join thousands of farmers and buyers who trust Krishik Bazaar
-            </p>
-          </div>
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 rounded-full bg-[#C8E6C9] px-8 py-4 text-sm font-bold text-[#1B5E20] shadow-lg transition hover:bg-[#A5D6A7] hover:scale-105 active:scale-95"
-          >
-            Get Started Today
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }

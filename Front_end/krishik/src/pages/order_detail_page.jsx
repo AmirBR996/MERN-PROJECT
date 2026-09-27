@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getOrderById } from "../api/order.api";
+import { getOrderById, cancelOrder } from "../api/order.api";
 import { formatPrice } from "../utils/helpers";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Trash2 } from "lucide-react";
+import Button from "../components/ui/Button";
+import { useToast } from "../components/ui/toast/ToastProvider";
+import Modal from "../components/ui/Modal";
 
 const statusStyles = {
   pending: "bg-harvest-100 text-harvest-700",
@@ -15,13 +18,38 @@ const OrderDetailPage = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const { addToast } = useToast();
+
+  const fetchOrder = async () => {
+    try {
+      const data = await getOrderById(id);
+      setOrder(data);
+    } catch (error) {
+      setOrder(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    getOrderById(id)
-      .then(setOrder)
-      .catch(() => setOrder(null))
-      .finally(() => setLoading(false));
+    fetchOrder();
   }, [id]);
+
+  const handleCancelOrder = async () => {
+    setCancelling(true);
+    setIsCancelModalOpen(false);
+    try {
+      await cancelOrder(id);
+      addToast("Order cancelled successfully.", "success");
+      await fetchOrder();
+    } catch (error) {
+      addToast(error?.response?.data?.message || "Unable to cancel order.", "error");
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -42,6 +70,8 @@ const OrderDetailPage = () => {
     );
   }
 
+  const isCancellable = order.status === "pending" || order.status === "confirmed";
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
       <Link to="/orders" className="mb-6 inline-flex items-center gap-2 text-sm text-mist hover:text-leaf-700">
@@ -57,11 +87,23 @@ const OrderDetailPage = () => {
           <p className="mt-1 text-sm text-mist">
             Placed on {new Date(order.createdAt).toLocaleDateString("en-NP", { dateStyle: "long" })}
           </p>
-        </div>
-        <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusStyles[order.status]}`}>
-          {order.status}
-        </span>
-      </div>
+        </div >
+        <div className="flex items-center gap-3">
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusStyles[order.status]}`}>
+            {order.status}
+          </span >
+          {isCancellable && (
+            <Button
+              variant="outline"
+              className="gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+              onClick={() => setIsCancelModalOpen(true)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Cancel Order
+            </Button>
+          )}
+        </div >
+      </div >
 
       <div className="mt-8 space-y-4">
         {order.items?.map((item, i) => (
@@ -72,31 +114,31 @@ const OrderDetailPage = () => {
               <p className="text-sm text-mist">
                 {item.quantity} × {formatPrice(item.price)} / {item.unit}
               </p>
-            </div>
+            </div >
             <p className="font-semibold text-bark">{formatPrice(item.price * item.quantity)}</p>
-          </div>
+          </div >
         ))}
-      </div>
+      </div >
 
       <div className="mt-6 rounded-2xl border border-soil-200 bg-white p-6">
         <div className="space-y-2 text-sm">
           <div className="flex justify-between text-mist">
             <span>Subtotal</span>
             <span>{formatPrice(order.subtotal)}</span>
-          </div>
+          </div >
           <div className="flex justify-between text-mist">
             <span>Delivery</span>
             <span>{formatPrice(order.delivery_fee)}</span>
-          </div>
+          </div >
           <div className="flex justify-between text-mist">
             <span>Krishik Bazar service charge</span>
             <span>{formatPrice(order.platform_fee)}</span>
-          </div>
+          </div >
           <div className="flex justify-between font-display text-lg font-bold text-bark">
             <span>Total</span>
             <span>{formatPrice(order.total)}</span>
-          </div>
-        </div>
+          </div >
+        </div >
 
         <div className="mt-4 rounded-xl bg-soil-50 p-4 text-sm">
           <p className="font-semibold text-bark">Delivery address</p>
@@ -105,7 +147,7 @@ const OrderDetailPage = () => {
           <p className="text-mist">
             {order.delivery_address?.city}, {order.delivery_address?.district}
           </p>
-        </div>
+        </div >
 
         <p className="mt-4 text-sm text-mist">
           Payment:{" "}
@@ -116,8 +158,32 @@ const OrderDetailPage = () => {
               : "Cash on Delivery"}{" "}
           — <span className="capitalize">{order.payment_status}</span>
         </p>
-      </div>
-    </div>
+      </div >
+
+      <Modal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        title="Cancel Order"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-mist">
+            Are you sure you want to cancel this order? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setIsCancelModalOpen(false)}>
+              Keep Order
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleCancelOrder}
+              disabled={cancelling}
+            >
+              {cancelling ? "Cancelling..." : "Yes, Cancel Order"}
+            </Button>
+          </div >
+        </div >
+      </Modal>
+    </div >
   );
 };
 

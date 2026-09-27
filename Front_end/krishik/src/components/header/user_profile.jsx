@@ -2,13 +2,16 @@ import React, { useContext, useState } from "react";
 import { AuthContext } from "../footer/authcontext.jsx";
 import { useNavigate } from "react-router-dom";
 import { X, LogOut, Pencil, MapPin, Mail } from "lucide-react";
+import { useToast } from "../ui/toast/ToastProvider";
 
 const User_profile = () => {
   const { user, updateUser, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
+
 
   const [formData, setFormData] = useState({
     first_name: user?.first_name || "",
@@ -46,8 +49,9 @@ const User_profile = () => {
       setLoading(true);
       await updateUser(formData);
       setEditMode(false);
+      addToast("Profile updated successfully!", "success");
     } catch (err) {
-      alert("Update failed");
+      addToast("Update failed", "error");
     } finally {
       setLoading(false);
     }

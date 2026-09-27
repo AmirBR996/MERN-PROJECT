@@ -15,10 +15,10 @@ const AddProductForm = ({
     price: initialData?.price !== undefined ? String(initialData.price) : "",
     category: initialData?.category || "Vegetables",
     stock: initialData?.stock !== undefined ? String(initialData.stock) : "",
+    location: initialData?.location || "",
+    image_url: initialData?.image_url || "",
   });
 
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(initialData?.image_url || null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info");
@@ -30,41 +30,23 @@ const AddProductForm = ({
     setForm((current) => ({ ...current, [name]: value }));
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const removeImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!form.name || !form.description || !form.price || (!imageFile && !imagePreview)) {
-      setMessage("Fill in all required details and upload a photo.");
+    if (!form.name || !form.description || !form.price || !form.location || !form.image_url) {
+      setMessage("Fill in all required details including the image URL.");
       setMessageType("error");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("name", form.name);
-    formData.append("description", form.description);
-    formData.append("price", form.price);
-    formData.append("category", form.category);
-    formData.append("stock", form.stock || 0);
-
-    if (imageFile) {
-      formData.append("image", imageFile);
-    }
+    const productData = {
+      name: form.name,
+      description: form.description,
+      price: form.price,
+      category: form.category,
+      stock: form.stock || 0,
+      location: form.location,
+      image_url: form.image_url,
+    };
 
     try {
       setSaving(true);
@@ -72,9 +54,9 @@ const AddProductForm = ({
 
       let result;
       if (initialData) {
-        result = await updateProduct(initialData._id, formData);
+        result = await updateProduct(initialData._id, productData);
       } else {
-        result = await createProduct(formData);
+        result = await createProduct(productData);
       }
 
       setMessage(initialData ? "Product updated successfully!" : "Product added successfully!");
@@ -147,40 +129,35 @@ const AddProductForm = ({
         />
       </div>
 
+      <Input
+        label="Location"
+        name="location"
+        value={form.location}
+        onChange={handleChange}
+        placeholder="e.g. Nashik, Maharashtra"
+      />
+
       <div className="space-y-3">
-        <label className="text-sm font-semibold text-stone-900">Product Photo</label>
-        <div className="relative group overflow-hidden rounded-xl border-2 border-dashed border-stone-200 bg-stone-50 p-4 transition hover:border-emerald-400">
-          {imagePreview ? (
-            <div className="relative h-48 w-full">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="h-full w-full rounded-lg object-cover"
-              />
-              <button
-                type="button"
-                onClick={removeImage}
-                className="absolute right-2 top-2 rounded-full bg-white/90 p-1 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="mb-3 rounded-full bg-emerald-100 p-3 text-emerald-600">
-                <Upload className="h-6 w-6" />
-              </div>
-              <p className="text-sm font-medium text-stone-900">Click to upload product photo</p>
-              <p className="mt-1 text-xs text-stone-500">PNG, JPG or WEBP (max 5MB)</p>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="absolute inset-0 cursor-pointer opacity-0"
-              />
-            </div>
-          )}
-        </div>
+        <Input
+          label="Product Image URL"
+          name="image_url"
+          value={form.image_url}
+          onChange={handleChange}
+          placeholder="https://example.com/image.jpg"
+        />
+        {form.image_url && (
+          <div className="relative group overflow-hidden rounded-xl border border-stone-200 bg-stone-50 p-2 transition hover:border-emerald-400">
+            <img
+              src={form.image_url}
+              alt="Preview"
+              className="h-32 w-full rounded-lg object-cover"
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/300";
+              }}
+            />
+            <p className="mt-1 text-[10px] text-center text-stone-500 uppercase font-bold">Image Preview</p>
+          </div>
+        )}
       </div>
 
       {message && (

@@ -68,9 +68,12 @@ const ProductDetailPage = () => {
         {/* Product Image Section */}
         <div className="relative overflow-hidden rounded-3xl border border-border bg-muted/30 shadow-sm group">
           <img
-            src={product.image_url}
+            src={product.image_url || "https://via.placeholder.com/300"}
             alt={product.name}
             className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              e.target.src = "https://via.placeholder.com/300";
+            }}
           />
           <div className="absolute left-4 top-4">
             <TrustBadge type={product?.is_organic ? "organic" : "verified"} />

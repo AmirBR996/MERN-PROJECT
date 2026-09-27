@@ -42,7 +42,11 @@ export const deleteProduct = async (id) => {
 
 export const updateProduct = async (id, productData) => {
     try {
-        const response = await API.put(`/products/${id}`, productData);
+        const response = await API.put(`/products/${id}`, productData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return response.data;
     } catch (error) {
         console.error("Error updating product:", error);
@@ -52,7 +56,11 @@ export const updateProduct = async (id, productData) => {
 
 export const createProduct = async (productData) => {
     try {
-        const response = await API.post("/products", productData);
+        const response = await API.post("/products", productData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return response.data;
     } catch (error) {
         console.error("Error creating product:", error);

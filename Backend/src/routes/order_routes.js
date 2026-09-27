@@ -6,7 +6,8 @@ import {
   getOrderById,
   getSellerStats,
   getSellerSalesAnalytics,
-  getSellerOrders
+  getSellerOrders,
+  cancelOrder
 } from "../controller/order_controller.js";
 
 const router = express.Router();
@@ -15,6 +16,7 @@ const router = express.Router();
 router.post("/", authenticate, createOrder);
 router.get("/mine", authenticate, getMyOrders);
 router.get("/:id", authenticate, getOrderById);
+router.patch("/:id/cancel", authenticate, cancelOrder);
 
 // Seller Routes
 router.get("/seller/stats", authenticate, getSellerStats);

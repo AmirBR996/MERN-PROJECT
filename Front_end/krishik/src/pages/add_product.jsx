@@ -6,6 +6,8 @@ import ProductCard from "../components/cards/product_card.jsx";
 import { createProduct, deleteProduct, getMyProducts, updateProduct } from "../api/product.api.js";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
+import { useToast } from "../components/ui/toast/ToastProvider";
+import Modal from "../components/ui/Modal";
 
 const initialForm = {
   name: "",
@@ -13,6 +15,7 @@ const initialForm = {
   price: "",
   category: "Vegetables",
   stock: "",
+  location: "",
 };
 
 const categoryOptions = ["Vegetables", "Fruits", "Grains", "Dairy", "Meat", "Other"];
@@ -20,6 +23,7 @@ const categoryOptions = ["Vegetables", "Fruits", "Grains", "Dairy", "Meat", "Oth
 export const Add_product = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { addToast } = useToast();
   const sellerId = user?._id || user?.id || "";
   const isSeller = user?.user_type === "seller";
 
@@ -27,6 +31,7 @@ export const Add_product = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info");
   const [form, setForm] = useState(initialForm);
@@ -113,6 +118,7 @@ export const Add_product = () => {
       price: product.price !== undefined ? String(product.price) : "",
       category: product.category || "Vegetables",
       stock: product.stock !== undefined ? String(product.stock) : "",
+      location: product.location || "",
     });
     setImagePreview(product.image_url);
     setImageFile(null); // New file must be uploaded to change image
@@ -121,10 +127,14 @@ export const Add_product = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this product? This cannot be undone.")) {
-      return;
-    }
+  const handleDelete = (id) => {
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = async () => {
+    const id = deleteConfirmId;
+    setDeleteConfirmId(null);
+    if (!id) return;
 
     try {
       await deleteProduct(id);
@@ -132,11 +142,9 @@ export const Add_product = () => {
       if (editingProductId === id) {
         clearForm();
       }
-      setMessage("Product deleted successfully.");
-      setMessageType("success");
+      addToast("Product deleted successfully.", "success");
     } catch (error) {
-      setMessage(error?.response?.data?.message || "Unable to delete product.");
-      setMessageType("error");
+      addToast(error?.response?.data?.message || "Unable to delete product.", "error");
     }
   };
 
@@ -155,7 +163,7 @@ export const Add_product = () => {
       return;
     }
 
-    if (!form.name || !form.description || !form.price || (!imageFile && !imagePreview)) {
+    if (!form.name || !form.description || !form.price || !form.location || (!imageFile && !imagePreview)) {
       setMessage("Fill in all required product details and upload a photo.");
       setMessageType("error");
       return;
@@ -167,6 +175,7 @@ export const Add_product = () => {
     formData.append("price", form.price);
     formData.append("category", form.category);
     formData.append("stock", form.stock || 0);
+    formData.append("location", form.location);
     formData.append("seller_id", sellerId);
 
     if (imageFile) {
